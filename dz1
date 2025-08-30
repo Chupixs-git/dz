@@ -1,0 +1,121 @@
+using System;
+
+class Program
+{
+    public enum Choice
+    {
+        Rock = 1,
+        Paper = 2,
+        Scissors = 3
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("=== Игра Камень - Ножницы - Бумага ===\n");
+
+        bool playAgain = true;
+        int playerWins = 0;
+        int computerWins = 0;
+        int draws = 0;
+
+        while (playAgain)
+        {
+            Console.WriteLine("Выберите ваш ход:");
+            Console.WriteLine("1 - Камень");
+            Console.WriteLine("2 - Бумага");
+            Console.WriteLine("3 - Ножницы");
+            Console.Write("Ваш выбор (1-3): ");
+
+            if (int.TryParse(Console.ReadLine(), out int playerChoice) &&
+                playerChoice >= 1 && playerChoice <= 3)
+            {
+                Choice playerMove = (Choice)playerChoice;
+                Choice computerMove = GetComputerChoice();
+
+                Console.WriteLine($"\nВы выбрали: {GetChoiceName(playerMove)}");
+                Console.WriteLine($"Компьютер выбрал: {GetChoiceName(computerMove)}");
+
+                GameResult result = DetermineWinner(playerMove, computerMove);
+
+                switch (result)
+                {
+                    case GameResult.PlayerWins:
+                        Console.WriteLine("🎉 Вы выиграли!");
+                        playerWins++;
+                        break;
+                    case GameResult.ComputerWins:
+                        Console.WriteLine("😞 Компьютер выиграл!");
+                        computerWins++;
+                        break;
+                    case GameResult.Draw:
+                        Console.WriteLine("🤝 Ничья!");
+                        draws++;
+                        break;
+                }
+
+                Console.WriteLine($"\nСчет: Вы {playerWins} - {computerWins} Компьютер (Ничьих: {draws})");
+
+                Console.Write("\nХотите сыграть еще раз? (y/n): ");
+                string response = Console.ReadLine()?.ToLower();
+                playAgain = response == "y" || response == "yes" || response == "да" || response == "д";
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine("Неверный выбор! Пожалуйста, введите число от 1 до 3.\n");
+            }
+        }
+
+        Console.WriteLine("Спасибо за игру!");
+        Console.WriteLine($"Финальный счет: Вы {playerWins} - {computerWins} Компьютер (Ничьих: {draws})");
+
+        if (playerWins > computerWins)
+            Console.WriteLine("🏆 Поздравляем! Вы выиграли общий зачет!");
+        else if (computerWins > playerWins)
+            Console.WriteLine("🤖 Компьютер выиграл общий зачет!");
+        else
+            Console.WriteLine("⚖️ Общий зачет закончился вничью!");
+    }
+
+    public enum GameResult
+    {
+        PlayerWins,
+        ComputerWins,
+        Draw
+    }
+
+    public static Choice GetComputerChoice()
+    {
+        Random random = new Random();
+        return (Choice)random.Next(1, 4);
+    }
+
+    public static string GetChoiceName(Choice choice)
+    {
+        switch (choice)
+        {
+            case Choice.Rock:
+                return "Камень 🗿";
+            case Choice.Paper:
+                return "Бумага 📄";
+            case Choice.Scissors:
+                return "Ножницы ✂️";
+            default:
+                return "Неизвестно";
+        }
+    }
+
+    public static GameResult DetermineWinner(Choice player, Choice computer)
+    {
+        if (player == computer)
+        {
+            return GameResult.Draw;
+        }
+
+        bool playerWins = (player == Choice.Rock && computer == Choice.Scissors) ||
+                         (player == Choice.Paper && computer == Choice.Rock) ||
+                         (player == Choice.Scissors && computer == Choice.Paper);
+
+        return playerWins ? GameResult.PlayerWins : GameResult.ComputerWins;
+    }
+}
