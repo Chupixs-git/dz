@@ -1,0 +1,615 @@
+using System;
+
+
+public class Website
+{
+    
+    private string siteName;
+    private string sitePath;
+    private string siteDescription;
+    private string ipAddress;
+
+    
+    public Website()
+    {
+        siteName = "";
+        sitePath = "";
+        siteDescription = "";
+        ipAddress = "";
+    }
+
+    
+    public Website(string name, string path, string description, string ip)
+    {
+        siteName = name;
+        sitePath = path;
+        siteDescription = description;
+        ipAddress = ip;
+    }
+
+    
+    public string GetSiteName()
+    {
+        return siteName;
+    }
+
+    public string GetSitePath()
+    {
+        return sitePath;
+    }
+
+    public string GetSiteDescription()
+    {
+        return siteDescription;
+    }
+
+    public string GetIpAddress()
+    {
+        return ipAddress;
+    }
+
+    
+    public void SetSiteName(string name)
+    {
+        siteName = name;
+    }
+
+    public void SetSitePath(string path)
+    {
+        sitePath = path;
+    }
+
+    public void SetSiteDescription(string description)
+    {
+        siteDescription = description;
+    }
+
+    public void SetIpAddress(string ip)
+    {
+        ipAddress = ip;
+    }
+
+   
+    public void InputData()
+    {
+        Console.WriteLine("=== Ввод данных веб-сайта ===");
+
+        Console.Write("Введите название сайта: ");
+        siteName = Console.ReadLine();
+
+        Console.Write("Введите путь к сайту (URL): ");
+        sitePath = Console.ReadLine();
+
+        Console.Write("Введите описание сайта: ");
+        siteDescription = Console.ReadLine();
+
+        Console.Write("Введите IP адрес сайта: ");
+        ipAddress = Console.ReadLine();
+
+        Console.WriteLine("Данные успешно введены!\n");
+    }
+
+    
+    public void OutputData()
+    {
+        Console.WriteLine("=== Информация о веб-сайте ===");
+        Console.WriteLine($"Название сайта: {siteName}");
+        Console.WriteLine($"Путь к сайту: {sitePath}");
+        Console.WriteLine($"Описание: {siteDescription}");
+        Console.WriteLine($"IP адрес: {ipAddress}");
+        Console.WriteLine("================================\n");
+    }
+
+    
+    public bool IsDataComplete()
+    {
+        return !string.IsNullOrEmpty(siteName) &&
+               !string.IsNullOrEmpty(sitePath) &&
+               !string.IsNullOrEmpty(siteDescription) &&
+               !string.IsNullOrEmpty(ipAddress);
+    }
+}
+
+class Program
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("=== Демонстрация работы класса Website ===\n");
+
+        
+        Website website = new Website();
+
+        bool running = true;
+        while (running)
+        {
+            Console.WriteLine("Выберите действие:");
+            Console.WriteLine("1 - Ввести данные веб-сайта");
+            Console.WriteLine("2 - Показать данные веб-сайта");
+            Console.WriteLine("3 - Изменить название сайта");
+            Console.WriteLine("4 - Изменить путь к сайту");
+            Console.WriteLine("5 - Изменить описание сайта");
+            Console.WriteLine("6 - Изменить IP адрес");
+            Console.WriteLine("7 - Создать новый сайт с параметрами");
+            Console.WriteLine("0 - Выход");
+            Console.Write("Ваш выбор: ");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    website.InputData();
+                    break;
+
+                case "2":
+                    if (website.IsDataComplete())
+                    {
+                        website.OutputData();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Данные не введены или введены не полностью!\n");
+                    }
+                    break;
+
+                case "3":
+                    Console.Write("Введите новое название сайта: ");
+                    string newName = Console.ReadLine();
+                    website.SetSiteName(newName);
+                    Console.WriteLine("Название обновлено!\n");
+                    break;
+
+                case "4":
+                    Console.Write("Введите новый путь к сайту: ");
+                    string newPath = Console.ReadLine();
+                    website.SetSitePath(newPath);
+                    Console.WriteLine("Путь обновлен!\n");
+                    break;
+
+                case "5":
+                    Console.Write("Введите новое описание сайта: ");
+                    string newDescription = Console.ReadLine();
+                    website.SetSiteDescription(newDescription);
+                    Console.WriteLine("Описание обновлено!\n");
+                    break;
+
+                case "6":
+                    Console.Write("Введите новый IP адрес: ");
+                    string newIp = Console.ReadLine();
+                    website.SetIpAddress(newIp);
+                    Console.WriteLine("IP адрес обновлен!\n");
+                    break;
+
+                case "7":
+                    Console.Write("Введите название сайта: ");
+                    string name = Console.ReadLine();
+                    Console.Write("Введите путь к сайту: ");
+                    string path = Console.ReadLine();
+                    Console.Write("Введите описание: ");
+                    string desc = Console.ReadLine();
+                    Console.Write("Введите IP адрес: ");
+                    string ip = Console.ReadLine();
+
+                    website = new Website(name, path, desc, ip);
+                    Console.WriteLine("Новый веб-сайт создан!\n");
+                    break;
+
+                case "0":
+                    running = false;
+                    Console.WriteLine("До свидания!");
+                    break;
+
+                default:
+                    Console.WriteLine("Неверный выбор! Попробуйте снова.\n");
+                    break;
+            }
+        }
+    }
+}
+//2
+
+using System;
+
+
+public class journal
+{
+    private string name;        
+    private int foundingYear;   
+    private string description; 
+    private string phone;      
+    private string email;      
+
+    
+    public journal()
+    {
+        name = "";
+        foundingYear = 0;
+        description = "";
+        phone = "";
+        email = "";
+    }
+
+    
+    public journal(string name, int foundingYear, string description, string phone, string email)
+    {
+        this.name = name;
+        this.foundingYear = foundingYear;
+        this.description = description;
+        this.phone = phone;
+        this.email = email;
+    }
+
+    
+    public void SetName(string name) => this.name = name;
+    public void SetFoundingYear(int year) => this.foundingYear = year;
+    public void SetDescription(string description) => this.description = description;
+    public void SetPhone(string phone) => this.phone = phone;
+    public void SetEmail(string email) => this.email = email;
+
+    
+    public string GetName() => name;
+    public int GetFoundingYear() => foundingYear;
+    public string GetDescription() => description;
+    public string GetPhone() => phone;
+    public string GetEmail() => email;
+
+    
+    public void InputData()
+    {
+        Console.WriteLine("=== Ввод данных журнала ===");
+
+        Console.Write("Введите название журнала: ");
+        name = Console.ReadLine() ?? "";
+
+        Console.Write("Введите год основания: ");
+        if (int.TryParse(Console.ReadLine(), out int year))
+        {
+            foundingYear = year;
+        }
+        else
+        {
+            Console.WriteLine("Неверный формат года. Установлен 0.");
+            foundingYear = 0;
+        }
+
+        Console.Write("Введите описание журнала: ");
+        description = Console.ReadLine() ?? "";
+
+        Console.Write("Введите контактный телефон: ");
+        phone = Console.ReadLine() ?? "";
+
+        Console.Write("Введите контактный e-mail: ");
+        email = Console.ReadLine() ?? "";
+
+        Console.WriteLine("Данные успешно введены!\n");
+    }
+
+    
+    public void DisplayData()
+    {
+        Console.WriteLine("=== Информация о журнале ===");
+        Console.WriteLine($"Название: {name}");
+        Console.WriteLine($"Год основания: {foundingYear}");
+        Console.WriteLine($"Описание: {description}");
+        Console.WriteLine($"Контактный телефон: {phone}");
+        Console.WriteLine($"Контактный e-mail: {email}");
+        Console.WriteLine(new string('-', 30));
+    }
+
+    
+    public void EditField()
+    {
+        Console.WriteLine("Какое поле вы хотите изменить?");
+        Console.WriteLine("1 - Название");
+        Console.WriteLine("2 - Год основания");
+        Console.WriteLine("3 - Описание");
+        Console.WriteLine("4 - Телефон");
+        Console.WriteLine("5 - E-mail");
+        Console.Write("Ваш выбор (1-5): ");
+
+        if (int.TryParse(Console.ReadLine(), out int choice))
+        {
+            switch (choice)
+            {
+                case 1:
+                    Console.Write("Введите новое название: ");
+                    SetName(Console.ReadLine() ?? "");
+                    break;
+                case 2:
+                    Console.Write("Введите новый год основания: ");
+                    if (int.TryParse(Console.ReadLine(), out int year))
+                        SetFoundingYear(year);
+                    break;
+                case 3:
+                    Console.Write("Введите новое описание: ");
+                    SetDescription(Console.ReadLine() ?? "");
+                    break;
+                case 4:
+                    Console.Write("Введите новый телефон: ");
+                    SetPhone(Console.ReadLine() ?? "");
+                    break;
+                case 5:
+                    Console.Write("Введите новый e-mail: ");
+                    SetEmail(Console.ReadLine() ?? "");
+                    break;
+                default:
+                    Console.WriteLine("Неверный выбор!");
+                    break;
+            }
+        }
+    }
+}
+
+class Program
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("=== Программа для работы с журналом ===\n");
+
+
+        journal journal1 = new journal();
+
+        bool running = true;
+        while (running)
+        {
+            Console.WriteLine("Выберите действие:");
+            Console.WriteLine("1 - Ввести данные журнала");
+            Console.WriteLine("2 - Показать данные журнала");
+            Console.WriteLine("3 - Редактировать поле");
+            Console.WriteLine("4 - Создать журнал с тестовыми данными");
+            Console.WriteLine("0 - Выход");
+            Console.Write("Ваш выбор: ");
+
+            if (int.TryParse(Console.ReadLine(), out int choice))
+            {
+                switch (choice)
+                {
+                    case 1:
+                        journal1.InputData();
+                        break;
+                    case 2:
+                        journal1.DisplayData();
+                        break;
+                    case 3:
+                        journal1.EditField();
+                        Console.WriteLine("Поле успешно изменено!\n");
+                        break;
+                    case 4:
+                        journal1 = new journal("Наука и жизнь", 1934,
+                            "Научно-популярный журнал", "+7-495-123-45-67",
+                            "info@nkj.ru");
+                        Console.WriteLine("Тестовый журнал создан!\n");
+                        break;
+                    case 0:
+                        running = false;
+                        Console.WriteLine("Программа завершена.");
+                        break;
+                    default:
+                        Console.WriteLine("Неверный выбор! Попробуйте снова.\n");
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Неверный ввод! Введите число.\n");
+            }
+        }
+    }
+}
+//3
+
+
+using System;
+
+
+public class Shop
+{
+    private string shopName;
+    private string address;
+    private string description;
+    private string contactPhone;
+    private string contactEmail;
+
+   
+    public Shop()
+    {
+        shopName = "";
+        address = "";
+        description = "";
+        contactPhone = "";
+        contactEmail = "";
+    }
+
+
+    public Shop(string name, string addr, string desc, string phone, string email)
+    {
+        shopName = name;
+        address = addr;
+        description = desc;
+        contactPhone = phone;
+        contactEmail = email;
+    }
+
+
+    public void SetShopName(string name)
+    {
+        shopName = name;
+    }
+
+    public void SetAddress(string addr)
+    {
+        address = addr;
+    }
+
+    public void SetDescription(string desc)
+    {
+        description = desc;
+    }
+
+    public void SetContactPhone(string phone)
+    {
+        contactPhone = phone;
+    }
+
+    public void SetContactEmail(string email)
+    {
+        contactEmail = email;
+    }
+
+
+    public string GetShopName()
+    {
+        return shopName;
+    }
+
+    public string GetAddress()
+    {
+        return address;
+    }
+
+    public string GetDescription()
+    {
+        return description;
+    }
+
+    public string GetContactPhone()
+    {
+        return contactPhone;
+    }
+
+    public string GetContactEmail()
+    {
+        return contactEmail;
+    }
+
+
+    public void InputData()
+    {
+        Console.WriteLine("=== Ввод данных магазина ===");
+
+        Console.Write("Введите название магазина: ");
+        shopName = Console.ReadLine();
+
+        Console.Write("Введите адрес магазина: ");
+        address = Console.ReadLine();
+
+        Console.Write("Введите описание профиля магазина: ");
+        description = Console.ReadLine();
+
+        Console.Write("Введите контактный телефон: ");
+        contactPhone = Console.ReadLine();
+
+        Console.Write("Введите контактный e-mail: ");
+        contactEmail = Console.ReadLine();
+
+        Console.WriteLine("Данные успешно введены!\n");
+    }
+
+
+    public void DisplayData()
+    {
+        Console.WriteLine("=== Информация о магазине ===");
+        Console.WriteLine($"Название магазина: {shopName}");
+        Console.WriteLine($"Адрес: {address}");
+        Console.WriteLine($"Описание профиля: {description}");
+        Console.WriteLine($"Контактный телефон: {contactPhone}");
+        Console.WriteLine($"Контактный e-mail: {contactEmail}");
+        Console.WriteLine();
+    }
+
+
+    public bool IsDataValid()
+    {
+        return !string.IsNullOrEmpty(shopName) &&
+               !string.IsNullOrEmpty(address) &&
+               !string.IsNullOrEmpty(contactPhone);
+    }
+}
+
+class Program
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("=== Демонстрация работы с классом Магазин ===\n");
+
+
+        Shop shop1 = new Shop();
+
+        bool exit = false;
+        while (!exit)
+        {
+            Console.WriteLine("Выберите действие:");
+            Console.WriteLine("1 - Ввести данные магазина");
+            Console.WriteLine("2 - Показать данные магазина");
+            Console.WriteLine("3 - Изменить название магазина");
+            Console.WriteLine("4 - Изменить адрес");
+            Console.WriteLine("5 - Изменить телефон");
+            Console.WriteLine("6 - Создать тестовый магазин");
+            Console.WriteLine("0 - Выход");
+            Console.Write("Ваш выбор: ");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    shop1.InputData();
+                    break;
+
+                case "2":
+                    if (shop1.IsDataValid())
+                    {
+                        shop1.DisplayData();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Данные магазина не заполнены или неполные!\n");
+                    }
+                    break;
+
+                case "3":
+                    Console.Write("Введите новое название магазина: ");
+                    string newName = Console.ReadLine();
+                    shop1.SetShopName(newName);
+                    Console.WriteLine($"Название изменено на: {shop1.GetShopName()}\n");
+                    break;
+
+                case "4":
+                    Console.Write("Введите новый адрес: ");
+                    string newAddress = Console.ReadLine();
+                    shop1.SetAddress(newAddress);
+                    Console.WriteLine($"Адрес изменен на: {shop1.GetAddress()}\n");
+                    break;
+
+                case "5":
+                    Console.Write("Введите новый телефон: ");
+                    string newPhone = Console.ReadLine();
+                    shop1.SetContactPhone(newPhone);
+                    Console.WriteLine($"Телефон изменен на: {shop1.GetContactPhone()}\n");
+                    break;
+
+                case "6":
+
+                    Shop testShop = new Shop(
+                        "Электроника+",
+                        "ул. Центральная, 25",
+                        "Магазин электроники и бытовой техники",
+                        "+7 (495) 123-45-67",
+                        "info@electronics-plus.ru"
+                    );
+                    Console.WriteLine("Создан тестовый магазин:");
+                    testShop.DisplayData();
+                    break;
+
+                case "0":
+                    exit = true;
+                    Console.WriteLine("До свидания!");
+                    break;
+
+                default:
+                    Console.WriteLine("Неверный выбор! Попробуйте еще раз.\n");
+                    break;
+            }
+        }
+    }
+}
