@@ -1,0 +1,215 @@
+using System;
+
+
+public class Fraction
+{
+    private int numerator; 
+    private int denominator; 
+
+   
+    public Fraction()
+    {
+        numerator = 0;
+        denominator = 1;
+    }
+
+ 
+    public Fraction(int num, int den)
+    {
+        if (den == 0)
+            throw new ArgumentException("Знаменатель не может быть равен нулю");
+        
+        numerator = num;
+        denominator = den;
+        Simplify();
+    }
+
+    
+    public void Input()
+    {
+        Console.Write("Введите числитель: ");
+        numerator = int.Parse(Console.ReadLine());
+        
+        do
+        {
+            Console.Write("Введите знаменатель (не равный нулю): ");
+            denominator = int.Parse(Console.ReadLine());
+            if (denominator == 0)
+                Console.WriteLine("Знаменатель не может быть равен нулю!");
+        } while (denominator == 0);
+        
+        Simplify();
+    }
+
+   
+    public void Display()
+    {
+        if (denominator == 1)
+            Console.WriteLine(numerator);
+        else
+            Console.WriteLine($"{numerator}/{denominator}");
+    }
+
+   
+    private void Simplify()
+    {
+        int gcd = GCD(Math.Abs(numerator), Math.Abs(denominator));
+        numerator /= gcd;
+        denominator /= gcd;
+        
+      
+        if (denominator < 0)
+        {
+            numerator = -numerator;
+            denominator = -denominator;
+        }
+    }
+
+    
+    private int GCD(int a, int b)
+    {
+        while (b != 0)
+        {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
+    
+    public Fraction Add(Fraction other)
+    {
+        int newNum = this.numerator * other.denominator + other.numerator * this.denominator;
+        int newDen = this.denominator * other.denominator;
+        return new Fraction(newNum, newDen);
+    }
+
+    
+    public Fraction Subtract(Fraction other)
+    {
+        int newNum = this.numerator * other.denominator - other.numerator * this.denominator;
+        int newDen = this.denominator * other.denominator;
+        return new Fraction(newNum, newDen);
+    }
+
+    
+    public Fraction Multiply(Fraction other)
+    {
+        int newNum = this.numerator * other.numerator;
+        int newDen = this.denominator * other.denominator;
+        return new Fraction(newNum, newDen);
+    }
+
+   
+    public Fraction Divide(Fraction other)
+    {
+        if (other.numerator == 0)
+            throw new ArgumentException("Деление на ноль");
+        
+        int newNum = this.numerator * other.denominator;
+        int newDen = this.denominator * other.numerator;
+        return new Fraction(newNum, newDen);
+    }
+
+    
+    public int Numerator
+    {
+        get { return numerator; }
+        set { numerator = value; Simplify(); }
+    }
+
+    public int Denominator
+    {
+        get { return denominator; }
+        set 
+        { 
+            if (value == 0)
+                throw new ArgumentException("Знаменатель не может быть равен нулю");
+            denominator = value; 
+            Simplify(); 
+        }
+    }
+
+    
+    public double ToDecimal()
+    {
+        return (double)numerator / denominator;
+    }
+
+    
+    public override string ToString()
+    {
+        if (denominator == 1)
+            return numerator.ToString();
+        else
+            return $"{numerator}/{denominator}";
+    }
+}
+
+class Program
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("=== Демонстрация работы класса Дробь ===\n");
+
+        // Создание дробей
+        Fraction f1 = new Fraction(1, 2);
+        Fraction f2 = new Fraction(3, 4);
+        
+        Console.WriteLine("Первая дробь:");
+        f1.Display();
+        
+        Console.WriteLine("Вторая дробь:");
+        f2.Display();
+        
+        Console.WriteLine("\nАрифметические операции:");
+        
+       
+        Fraction sum = f1.Add(f2);
+        Console.Write("Сложение: ");
+        f1.Display();
+        Console.Write(" + ");
+        f2.Display();
+        Console.Write(" = ");
+        sum.Display();
+        
+        
+        Fraction diff = f1.Subtract(f2);
+        Console.Write("Вычитание: ");
+        f1.Display();
+        Console.Write(" - ");
+        f2.Display();
+        Console.Write(" = ");
+        diff.Display();
+        
+        
+        Fraction product = f1.Multiply(f2);
+        Console.Write("Умножение: ");
+        f1.Display();
+        Console.Write(" * ");
+        f2.Display();
+        Console.Write(" = ");
+        product.Display();
+        
+        
+        Fraction quotient = f1.Divide(f2);
+        Console.Write("Деление: ");
+        f1.Display();
+        Console.Write(" / ");
+        f2.Display();
+        Console.Write(" = ");
+        quotient.Display();
+        
+        Console.WriteLine($"\nДесятичное представление первой дроби: {f1.ToDecimal():F4}");
+        Console.WriteLine($"Десятичное представление второй дроби: {f2.ToDecimal():F4}");
+
+        
+        Console.WriteLine("\n=== Ввод собственной дроби ===");
+        Fraction userFraction = new Fraction();
+        userFraction.Input();
+        Console.Write("Введенная дробь: ");
+        userFraction.Display();
+        Console.WriteLine($"В десятичном виде: {userFraction.ToDecimal():F4}");
+    }
+}
