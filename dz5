@@ -1,0 +1,322 @@
+using System;
+
+
+public class Money
+{
+    private int wholePart; 
+    private int fractionalPart; 
+
+    public Money(int wholePart = 0, int fractionalPart = 0)
+    {
+        this.wholePart = wholePart;
+        this.fractionalPart = fractionalPart;
+        Normalize();
+    }
+
+    private void Normalize()
+    {
+        if (fractionalPart >= 100)
+        {
+            wholePart += fractionalPart / 100;
+            fractionalPart %= 100;
+        }
+    }
+
+    public void SetAmount(int wholePart, int fractionalPart)
+    {
+        this.wholePart = wholePart;
+        this.fractionalPart = fractionalPart;
+        Normalize();
+    }
+
+    public void DisplayAmount()
+    {
+        Console.WriteLine($"{wholePart}.{fractionalPart:D2}");
+    }
+
+    public int WholePart { get => wholePart; set => wholePart = value; }
+    public int FractionalPart { get => fractionalPart; set { fractionalPart = value; Normalize(); } }
+}
+
+public class Product
+{
+    private string name;
+    private Money price;
+
+    public Product(string name, Money price)
+    {
+        this.name = name;
+        this.price = price;
+    }
+
+    public void ReducePrice(int wholeAmount, int fractionalAmount)
+    {
+        int currentTotal = price.WholePart * 100 + price.FractionalPart;
+        int reduction = wholeAmount * 100 + fractionalAmount;
+        int newTotal = Math.Max(0, currentTotal - reduction);
+        
+        price.SetAmount(newTotal / 100, newTotal % 100);
+    }
+
+    public void DisplayProduct()
+    {
+        Console.Write($"Товар: {name}, Цена: ");
+        price.DisplayAmount();
+    }
+
+    public string Name { get => name; set => name = value; }
+    public Money Price { get => price; set => price = value; }
+}
+
+
+public class Device
+{
+    protected string name;
+    protected string characteristics;
+
+    public Device(string name, string characteristics)
+    {
+        this.name = name;
+        this.characteristics = characteristics;
+    }
+
+    public virtual void Sound()
+    {
+        Console.WriteLine("Устройство издает звук");
+    }
+
+    public virtual void Show()
+    {
+        Console.WriteLine($"Устройство: {name}");
+    }
+
+    public virtual void Desc()
+    {
+        Console.WriteLine($"Описание: {characteristics}");
+    }
+}
+
+public class Kettle : Device
+{
+    public Kettle() : base("Чайник", "Электрический чайник для кипячения воды") { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Чайник свистит: Фуууууу!");
+    }
+}
+
+public class Microwave : Device
+{
+    public Microwave() : base("Микроволновка", "Микроволновая печь для разогрева пищи") { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Микроволновка гудит: Мммммм!");
+    }
+}
+
+public class Car : Device
+{
+    public Car() : base("Автомобиль", "Транспортное средство для перевозки людей") { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Автомобиль гудит: Би-бип!");
+    }
+}
+
+public class Ship : Device
+{
+    public Ship() : base("Пароход", "Водное транспортное средство") { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Пароход гудит: Туууу!");
+    }
+}
+
+
+public class MusicalInstrument
+{
+    protected string name;
+    protected string characteristics;
+    protected string history;
+
+    public MusicalInstrument(string name, string characteristics, string history)
+    {
+        this.name = name;
+        this.characteristics = characteristics;
+        this.history = history;
+    }
+
+    public virtual void Sound()
+    {
+        Console.WriteLine("Музыкальный инструмент издает звук");
+    }
+
+    public virtual void Show()
+    {
+        Console.WriteLine($"Музыкальный инструмент: {name}");
+    }
+
+    public virtual void Desc()
+    {
+        Console.WriteLine($"Описание: {characteristics}");
+    }
+
+    public virtual void History()
+    {
+        Console.WriteLine($"История: {history}");
+    }
+}
+
+public class Violin : MusicalInstrument
+{
+    public Violin() : base("Скрипка", "Смычковый струнный инструмент", "Появилась в XVI веке в Италии") { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Скрипка играет: Ля-ля-ля!");
+    }
+}
+
+public class Trombone : MusicalInstrument
+{
+    public Trombone() : base("Тромбон", "Медный духовой инструмент", "Развился из сакбута в XV веке") { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Тромбон играет: Бом-бом-бом!");
+    }
+}
+
+public class Ukulele : MusicalInstrument
+{
+    public Ukulele() : base("Укулеле", "Гавайский струнный инструмент", "Появился на Гавайях в XIX веке") { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Укулеле играет: Плинь-плинь!");
+    }
+}
+
+public class Cello : MusicalInstrument
+{
+    public Cello() : base("Виолончель", "Смычковый струнный инструмент", "Появилась в XVI веке как басовая скрипка") { }
+
+    public override void Sound()
+    {
+        Console.WriteLine("Виолончель играет: До-ре-ми!");
+    }
+}
+
+
+public abstract class Worker
+{
+    protected string name;
+    protected string position;
+
+    public Worker(string name, string position)
+    {
+        this.name = name;
+        this.position = position;
+    }
+
+    public abstract void Print();
+}
+
+public class President : Worker
+{
+    public President(string name) : base(name, "Президент") { }
+
+    public override void Print()
+    {
+        Console.WriteLine($"Президент {name}: Руковожу компанией и принимаю стратегические решения");
+    }
+}
+
+public class Security : Worker
+{
+    public Security(string name) : base(name, "Охранник") { }
+
+    public override void Print()
+    {
+        Console.WriteLine($"Охранник {name}: Обеспечиваю безопасность объекта");
+    }
+}
+
+public class Manager : Worker
+{
+    public Manager(string name) : base(name, "Менеджер") { }
+
+    public override void Print()
+    {
+        Console.WriteLine($"Менеджер {name}: Управляю проектами и координирую команду");
+    }
+}
+
+public class Engineer : Worker
+{
+    public Engineer(string name) : base(name, "Инженер") { }
+
+    public override void Print()
+    {
+        Console.WriteLine($"Инженер {name}: Проектирую и разрабатываю технические решения");
+    }
+}
+
+
+class Program
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("=== Задание 1: Класс Money и Product ===");
+        Money money1 = new Money(10, 50);
+        Console.Write("Сумма денег: ");
+        money1.DisplayAmount();
+
+        Product product1 = new Product("Хлеб", new Money(2, 30));
+        product1.DisplayProduct();
+        
+        product1.ReducePrice(0, 30);
+        Console.WriteLine("После скидки:");
+        product1.DisplayProduct();
+
+        Console.WriteLine("\n=== Задание 2: Устройства ===");
+        Device[] devices = { new Kettle(), new Microwave(), new Car(), new Ship() };
+        
+        foreach (Device device in devices)
+        {
+            device.Show();
+            device.Desc();
+            device.Sound();
+            Console.WriteLine();
+        }
+
+        Console.WriteLine("=== Задание 3: Музыкальные инструменты ===");
+        MusicalInstrument[] instruments = { new Violin(), new Trombone(), new Ukulele(), new Cello() };
+        
+        foreach (MusicalInstrument instrument in instruments)
+        {
+            instrument.Show();
+            instrument.Desc();
+            instrument.Sound();
+            instrument.History();
+            Console.WriteLine();
+        }
+
+        Console.WriteLine("=== Задание 4: Работники ===");
+        Worker[] workers = { 
+            new President("Иван Петров"), 
+            new Security("Николай Сидоров"), 
+            new Manager("Мария Иванова"), 
+            new Engineer("Алексей Козлов") 
+        };
+        
+        foreach (Worker worker in workers)
+        {
+            worker.Print();
+        }
+    }
+}
