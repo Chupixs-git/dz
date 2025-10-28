@@ -1,0 +1,142 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp9
+{
+    internal class Program
+    {
+        static string player()
+        {
+            while (true)
+            {
+                Console.WriteLine("Выберите ваш ход");
+                Console.WriteLine("1 - камень");
+                Console.WriteLine("2 - ножницы");
+                Console.WriteLine("3 - бумага");
+                string answer = Console.ReadLine();
+                switch (answer)
+                {
+                    case "1":
+                        return "камень";
+
+                       
+                    case "2":
+                        return "ножницы";
+
+                        
+                    case "3":
+                        return "бумага";
+                        
+                    default:
+                        Console.WriteLine("Данного выбора нету");
+                        break;
+
+
+
+                }
+
+
+
+
+            }
+        }
+        static string rodot()
+        {
+            Random random = new Random();
+
+            int choice = random.Next(1, 4);
+
+            switch (choice)
+            {
+                case 1:
+                    return "камень";
+
+                    
+                case 2:
+                    return "ножницы";
+
+                    
+                case 3:
+                    return "бумага";
+                   
+                default:
+                    return "ножницы";
+                    
+
+
+            }
+        }
+        static string winner(string player, string rodot)
+        {
+            if (player == rodot)
+            {
+                return "Ничья";
+
+            }
+            else if ((player == "камень" && rodot == "ножницы") || (player == "ножницы" && rodot == "бумага") || (player == "бумага" && rodot == "камень"))
+            {
+                return "Игрок победил";
+            }
+            else
+            {
+                return "Робот победил";
+            }
+
+
+        }
+        static void endRaund(string rodotChoice, string playerChoice, string result)
+        {
+            Console.WriteLine($"Игрок {playerChoice}");
+            Console.WriteLine($"Робот {rodotChoice}");
+            Console.WriteLine(result);
+        }
+        static bool goPlay()
+        {
+            while (true)
+            {
+                Console.WriteLine("Хотите еще сыграть Да или Нет");
+                string otvet = Console.ReadLine().ToLower();
+
+                if (otvet == "да")
+                {
+                    return true;
+                }
+                else if (otvet == "нет")
+                {
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("Введите да или нет");
+                }
+
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            bool playAgain = true;
+            while (playAgain)
+            {
+                string playerChoice = player();
+
+                string rodotChoice = rodot();
+
+                string result = winner(playerChoice, rodotChoice);
+
+                endRaund(rodotChoice, playerChoice,result);
+
+                playAgain = goPlay();
+            }
+
+
+
+
+
+        }
+    }
+}
