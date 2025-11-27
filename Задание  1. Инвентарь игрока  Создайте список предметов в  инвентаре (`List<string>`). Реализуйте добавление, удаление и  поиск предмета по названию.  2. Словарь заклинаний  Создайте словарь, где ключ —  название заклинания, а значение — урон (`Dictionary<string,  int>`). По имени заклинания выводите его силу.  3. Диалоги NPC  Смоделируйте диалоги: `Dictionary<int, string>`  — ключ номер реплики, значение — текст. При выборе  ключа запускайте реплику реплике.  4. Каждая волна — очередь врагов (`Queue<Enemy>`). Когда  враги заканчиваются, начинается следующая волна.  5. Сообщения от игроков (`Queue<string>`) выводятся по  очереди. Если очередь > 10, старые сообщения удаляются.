@@ -1,0 +1,245 @@
+  internal class дз2
+  {
+      class Enemy
+      {
+          public string Name { get; set; }
+          public int Health { get; set; }
+
+          public Enemy(string name, int health)
+          {
+              Name = name;
+              Health = health;
+          }
+      }
+
+      class Program
+      {
+          public static void Main(string[] args)
+          {
+              Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+              Console.WriteLine("=== Работа с коллекциями в C# ===\n");
+
+              Task1_PlayerInventory();
+              Task2_SpellDictionary();
+              Task3_NPCDialogues();
+              Task4_EnemyWaves();
+              Task5_PlayerMessages();
+
+              Console.WriteLine("\n=== Все задачи выполнены ===");
+          }
+
+          
+          static void Task1_PlayerInventory()
+          {
+              Console.WriteLine("--- Задача 1: Инвентарь игрока ---");
+
+              List<string> inventory = new List<string>();
+
+            
+              inventory.Add("Меч");
+              inventory.Add("Щит");
+              inventory.Add("Зелье здоровья");
+              inventory.Add("Лук");
+              inventory.Add("Стрелы");
+
+              Console.WriteLine("Инвентарь игрока:");
+              foreach (var item in inventory)
+              {
+                  Console.WriteLine($"  - {item}");
+              }
+
+             
+              string searchItem = "Щит";
+              if (inventory.Contains(searchItem))
+              {
+                  Console.WriteLine($"\nПредмет '{searchItem}' найден в инвентаре (индекс: {inventory.IndexOf(searchItem)})");
+              }
+              else
+              {
+                  Console.WriteLine($"\nПредмет '{searchItem}' не найден в инвентаре");
+              }
+
+              
+              string removeItem = "Лук";
+              if (inventory.Remove(removeItem))
+              {
+                  Console.WriteLine($"Предмет '{removeItem}' удален из инвентаря");
+              }
+
+              Console.WriteLine("\nИнвентарь после удаления:");
+              foreach (var item in inventory)
+              {
+                  Console.WriteLine($"  - {item}");
+              }
+
+              Console.WriteLine($"\nВсего предметов в инвентаре: {inventory.Count}\n");
+          }
+
+          
+          static void Task2_SpellDictionary()
+          {
+              Console.WriteLine("--- Задача 2: Словарь заклинаний ---");
+
+              Dictionary<string, int> spells = new Dictionary<string, int>
+      {
+          { "Огненный шар", 150 },
+          { "Ледяная стрела", 100 },
+          { "Молния", 200 },
+          { "Лечение", 0 },
+          { "Щит", 0 }
+      };
+
+              Console.WriteLine("Список заклинаний:");
+              foreach (var spell in spells)
+              {
+                  if (spell.Value > 0)
+                  {
+                      Console.WriteLine($"  {spell.Key}: {spell.Value} урона");
+                  }
+                  else
+                  {
+                      Console.WriteLine($"  {spell.Key}: защитное/лечебное заклинание");
+                  }
+              }
+
+              
+              string spellName = "Молния";
+              if (spells.ContainsKey(spellName))
+              {
+                  Console.WriteLine($"\nЗаклинание '{spellName}' наносит {spells[spellName]} урона");
+              }
+              else
+              {
+                  Console.WriteLine($"\nЗаклинание '{spellName}' не найдено");
+              }
+
+              Console.WriteLine();
+          }
+
+         
+          static void Task3_NPCDialogues()
+          {
+              Console.WriteLine("--- Задача 3: Диалоги NPC ---");
+
+              Dictionary<int, string> dialogues = new Dictionary<int, string>
+      {
+          { 1, "Приветствую тебя, путник!" },
+          { 2, "Что привело тебя в наши края?" },
+          { 3, "Я слышал о твоих подвигах." },
+          { 4, "Будь осторожен, в лесу много опасностей." },
+          { 5, "Удачи в твоих путешествиях!" }
+      };
+
+              Console.WriteLine("Диалог с NPC:");
+              foreach (var dialogue in dialogues.OrderBy(d => d.Key))
+              {
+                  Console.WriteLine($"  [{dialogue.Key}] {dialogue.Value}");
+              }
+
+              
+              int[] selectedReplicas = { 1, 3, 5 };
+              Console.WriteLine("\nВыбранные реплики:");
+              foreach (int replicaNumber in selectedReplicas)
+              {
+                  if (dialogues.ContainsKey(replicaNumber))
+                  {
+                      Console.WriteLine($"  Реплика {replicaNumber}: {dialogues[replicaNumber]}");
+                  }
+              }
+
+              Console.WriteLine();
+          }
+
+          
+          static void Task4_EnemyWaves()
+          {
+              Console.WriteLine("--- Задача 4: Волны врагов ---");
+
+             
+              Queue<Enemy> wave1 = new Queue<Enemy>();
+              wave1.Enqueue(new Enemy("Гоблин", 50));
+              wave1.Enqueue(new Enemy("Гоблин", 50));
+              wave1.Enqueue(new Enemy("Орк", 100));
+
+              Queue<Enemy> wave2 = new Queue<Enemy>();
+              wave2.Enqueue(new Enemy("Орк", 100));
+              wave2.Enqueue(new Enemy("Орк", 100));
+              wave2.Enqueue(new Enemy("Тролль", 200));
+
+              Queue<Enemy> wave3 = new Queue<Enemy>();
+              wave3.Enqueue(new Enemy("Тролль", 200));
+              wave3.Enqueue(new Enemy("Дракон", 500));
+
+              List<Queue<Enemy>> allWaves = new List<Queue<Enemy>> { wave1, wave2, wave3 };
+
+              int waveNumber = 1;
+              foreach (var wave in allWaves)
+              {
+                  Console.WriteLine($"\nВолна {waveNumber}:");
+                  int enemyCount = wave.Count;
+
+                  while (wave.Count > 0)
+                  {
+                      Enemy enemy = wave.Dequeue();
+                      Console.WriteLine($"  Враг появился: {enemy.Name} (Здоровье: {enemy.Health})");
+                  }
+
+                  Console.WriteLine($"  Волна {waveNumber} завершена! Побеждено врагов: {enemyCount}");
+                  waveNumber++;
+              }
+
+              Console.WriteLine();
+          }
+
+          
+          static void Task5_PlayerMessages()
+          {
+              Console.WriteLine("--- Задача 5: Сообщения от игроков ---");
+
+              Queue<string> messageQueue = new Queue<string>();
+              int maxMessages = 10;
+
+              
+              string[] incomingMessages = {
+          "Игрок1: Привет всем!",
+          "Игрок2: Кто хочет в группу?",
+          "Игрок3: Продам меч +5",
+          "Игрок4: Куплю зелья",
+          "Игрок5: Ищу гильдию",
+          "Игрок6: GG WP",
+          "Игрок7: Кто на рейд?",
+          "Игрок8: Помогите с квестом",
+          "Игрок9: Лаг...",
+          "Игрок10: Сервер отличный!",
+          "Игрок11: Новое сообщение 1",
+          "Игрок12: Новое сообщение 2",
+          "Игрок13: Новое сообщение 3"
+      };
+
+              foreach (var message in incomingMessages)
+              {
+                  
+                  if (messageQueue.Count >= maxMessages)
+                  {
+                      string removedMessage = messageQueue.Dequeue();
+                      Console.WriteLine($"[УДАЛЕНО старое сообщение]: {removedMessage}");
+                  }
+
+                  messageQueue.Enqueue(message);
+                  Console.WriteLine($"[НОВОЕ]: {message}");
+              }
+
+              Console.WriteLine($"\nВсего сообщений в очереди: {messageQueue.Count}");
+              Console.WriteLine("\nТекущие сообщения в чате:");
+              int position = 1;
+              foreach (var message in messageQueue)
+              {
+                  Console.WriteLine($"  {position}. {message}");
+                  position++;
+              }
+
+              Console.WriteLine();
+          }
+      }
+  }
