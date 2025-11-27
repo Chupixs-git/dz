@@ -1,0 +1,95 @@
+class BankAccount
+    {
+        private decimal balance;
+        private string accountNumber;
+        private string ownerName;
+
+        public BankAccount(string accountNumber, string ownerName, decimal initialBalance = 0)
+        {
+            this.accountNumber = accountNumber;
+            this.ownerName = ownerName;
+            this.balance = initialBalance >= 0 ? initialBalance : 0;
+        }
+
+       
+        public void Внести(decimal amount)
+        {
+            if (amount > 0)
+            {
+                balance += amount;
+                Console.WriteLine($"Внесено: {amount:C}. Новый баланс: {balance:C}");
+            }
+            else
+            {
+                Console.WriteLine("Сумма для внесения должна быть положительной!");
+            }
+        }
+
+       
+        public void Снять(decimal amount)
+        {
+            if (amount <= 0)
+            {
+                Console.WriteLine("Сумма для снятия должна быть положительной!");
+                return;
+            }
+
+            if (amount > balance)
+            {
+                Console.WriteLine($"Недостаточно средств! Доступно: {balance:C}, запрошено: {amount:C}");
+            }
+            else
+            {
+                balance -= amount;
+                Console.WriteLine($"Снято: {amount:C}. Новый баланс: {balance:C}");
+            }
+        }
+
+       
+        public decimal ПолучитьБаланс()
+        {
+            return balance;
+        }
+
+       
+        public void ИнформацияОВладельце()
+        {
+            Console.WriteLine("\n=== Информация о счете ===");
+            Console.WriteLine($"Владелец: {ownerName}");
+            Console.WriteLine($"Номер счета: {accountNumber}");
+            Console.WriteLine($"Текущий баланс: {balance:C}");
+            Console.WriteLine("==========================\n");
+        }
+    }
+
+    class BankAccountProgram
+    {
+        public static void Main(string[] args)
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            Console.WriteLine("=== Система управления банковским счетом ===\n");
+
+            
+            BankAccount account = new BankAccount("RU12345678901234567890", "Иван Петров", 1000);
+
+          
+            account.ИнформацияОВладельце();
+
+          
+            account.Внести(500);
+
+           
+            account.Снять(300);
+
+           
+            account.Снять(2000);
+
+          
+            Console.WriteLine($"\nТекущий баланс: {account.ПолучитьБаланс():C}");
+
+            
+            account.ИнформацияОВладельце();
+        }
+    }
+}
