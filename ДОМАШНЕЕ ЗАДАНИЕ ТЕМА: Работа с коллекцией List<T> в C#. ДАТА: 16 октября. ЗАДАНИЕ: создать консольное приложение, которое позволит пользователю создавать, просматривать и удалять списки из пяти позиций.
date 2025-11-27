@@ -1,0 +1,203 @@
+internal class дз
+{
+    class TopList
+    {
+        public string Name { get; set; }
+        public List<string> Items { get; set; }
+
+        public TopList(string name)
+        {
+            Name = name;
+            Items = new List<string>();
+        }
+    }
+
+    class Program
+    {
+        static List<TopList> topLists = new List<TopList>();
+
+        public static void Main(string[] args)
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            while (true)
+            {
+                ShowMainMenu();
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        CreateNewTopList();
+                        break;
+                    case "2":
+                        ViewAllTopLists();
+                        break;
+                    case "3":
+                        ViewTopListDetails();
+                        break;
+                    case "4":
+                        RenameTopList();
+                        break;
+                    case "5":
+                        DeleteTopList();
+                        break;
+                    case "0":
+                        Console.WriteLine("Выход из программы...");
+                        return;
+                    default:
+                        Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                        break;
+                }
+
+                Console.WriteLine("\nНажмите любую клавишу для продолжения...");
+                Console.ReadKey();
+                Console.Clear();
+            }
+        }
+
+        static void ShowMainMenu()
+        {
+            Console.WriteLine("╔════════════════════════════════════════╗");
+            Console.WriteLine("║   УПРАВЛЕНИЕ ТОП-5 СПИСКАМИ            ║");
+            Console.WriteLine("╚════════════════════════════════════════╝");
+            Console.WriteLine();
+            Console.WriteLine("1. Создать новый ТОП-5 список");
+            Console.WriteLine("2. Просмотреть все ТОП-5 списки");
+            Console.WriteLine("3. Детальный просмотр ТОП-5 списка");
+            Console.WriteLine("4. Переименовать ТОП-5 список");
+            Console.WriteLine("5. Удалить ТОП-5 список");
+            Console.WriteLine("0. Выход");
+            Console.WriteLine();
+            Console.Write("Выберите действие: ");
+        }
+
+        static void CreateNewTopList()
+        {
+            Console.Clear();
+            Console.WriteLine("═══ СОЗДАНИЕ НОВОГО ТОП-5 СПИСКА ═══\n");
+
+            Console.Write("Введите название списка: ");
+            string name = Console.ReadLine();
+
+            TopList newList = new TopList(name);
+
+            Console.WriteLine($"\nВведите 5 позиций для списка '{name}':");
+            for (int i = 1; i <= 5; i++)
+            {
+                Console.Write($"Позиция {i}: ");
+                string item = Console.ReadLine();
+                newList.Items.Add(item);
+            }
+
+            topLists.Add(newList);
+            Console.WriteLine($"\n✓ ТОП-5 список '{name}' успешно создан!");
+        }
+
+        static void ViewAllTopLists()
+        {
+            Console.Clear();
+            Console.WriteLine("═══ ВСЕ ТОП-5 СПИСКИ ═══\n");
+
+            if (topLists.Count == 0)
+            {
+                Console.WriteLine("Нет созданных списков.");
+                return;
+            }
+
+            for (int i = 0; i < topLists.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {topLists[i].Name} (5 позиций)");
+            }
+        }
+
+        static void ViewTopListDetails()
+        {
+            Console.Clear();
+            Console.WriteLine("═══ ДЕТАЛЬНЫЙ ПРОСМОТР ТОП-5 СПИСКА ═══\n");
+
+            if (topLists.Count == 0)
+            {
+                Console.WriteLine("Нет созданных списков.");
+                return;
+            }
+
+            ViewAllTopLists();
+            Console.WriteLine();
+            Console.Write("Введите номер списка для просмотра: ");
+
+            if (int.TryParse(Console.ReadLine(), out int index) && index > 0 && index <= topLists.Count)
+            {
+                TopList selectedList = topLists[index - 1];
+                Console.WriteLine($"\n╔═══ {selectedList.Name.ToUpper()} ═══╗\n");
+
+                for (int i = 0; i < selectedList.Items.Count; i++)
+                {
+                    Console.WriteLine($"  {i + 1}. {selectedList.Items[i]}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Неверный номер списка.");
+            }
+        }
+
+        static void RenameTopList()
+        {
+            Console.Clear();
+            Console.WriteLine("═══ ПЕРЕИМЕНОВАНИЕ ТОП-5 СПИСКА ═══\n");
+
+            if (topLists.Count == 0)
+            {
+                Console.WriteLine("Нет созданных списков.");
+                return;
+            }
+
+            ViewAllTopLists();
+            Console.WriteLine();
+            Console.Write("Введите номер списка для переименования: ");
+
+            if (int.TryParse(Console.ReadLine(), out int index) && index > 0 && index <= topLists.Count)
+            {
+                TopList selectedList = topLists[index - 1];
+                Console.WriteLine($"Текущее название: {selectedList.Name}");
+                Console.Write("Введите новое название: ");
+                string newName = Console.ReadLine();
+
+                selectedList.Name = newName;
+                Console.WriteLine($"\n✓ Список успешно переименован в '{newName}'!");
+            }
+            else
+            {
+                Console.WriteLine("Неверный номер списка.");
+            }
+        }
+
+        static void DeleteTopList()
+        {
+            Console.Clear();
+            Console.WriteLine("═══ УДАЛЕНИЕ ТОП-5 СПИСКА ═══\n");
+
+            if (topLists.Count == 0)
+            {
+                Console.WriteLine("Нет созданных списков.");
+                return;
+            }
+
+            ViewAllTopLists();
+            Console.WriteLine();
+            Console.Write("Введите номер списка для удаления: ");
+
+            if (int.TryParse(Console.ReadLine(), out int index) && index > 0 && index <= topLists.Count)
+            {
+                string deletedName = topLists[index - 1].Name;
+                topLists.RemoveAt(index - 1);
+                Console.WriteLine($"\n✓ Список '{deletedName}' успешно удалён!");
+            }
+            else
+            {
+                Console.WriteLine("Неверный номер списка.");
+            }
+        }
+    }
+}
