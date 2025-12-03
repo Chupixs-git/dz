@@ -1,0 +1,170 @@
+namespace BankAccount
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            Console.WriteLine("=== Система управления банковскими счетами ===\n");
+
+            
+            Console.WriteLine("--- Сберегательный счет ---");
+            SavingsAccount savings = new SavingsAccount("SA-001", 5000, 1000);
+            savings.DisplayBalance();
+            savings.AddMoney(2000);
+            savings.Withdraw(3000);  
+            savings.Withdraw(4000);  
+            savings.DisplayBalance();
+
+            Console.WriteLine("\n--- Расчетный счет ---");
+            CheckingAccount checking = new CheckingAccount("CA-002", 3000, 50);
+            checking.DisplayBalance();
+            checking.AddMoney(1000);
+            checking.Withdraw(500);   
+            checking.Withdraw(3500);  
+            checking.DisplayBalance();
+
+            Console.WriteLine("\n--- Кредитный счет ---");
+            CreditAccount credit = new CreditAccount("CR-003", 2000, 5000);
+            credit.DisplayBalance();
+            credit.AddMoney(1000);
+            credit.Withdraw(2500);    
+            credit.Withdraw(3000);    
+            credit.DisplayBalance();
+            credit.Withdraw(3000);    
+            credit.DisplayBalance();
+
+           
+        }
+
+    }
+    abstract class BankAccount
+    {
+
+        protected string AccountNumber { get; set; }
+        protected decimal Balance { get; set; }
+
+        public BankAccount(string accountNumber, decimal initialBalance)
+        {
+            AccountNumber = accountNumber;
+            Balance = initialBalance;
+        }
+
+        
+        public void AddMoney(decimal amount)
+        {
+            if (amount > 0)
+            {
+                Balance += amount;
+                Console.WriteLine($"Счет {AccountNumber}: пополнение на {amount:C}. Новый баланс: {Balance:C}");
+            }
+            else
+            {
+                Console.WriteLine("Сумма пополнения должна быть положительной!");
+            }
+        }
+        public abstract void Withdraw(decimal amount);
+
+       
+        public void DisplayBalance()
+        {
+            Console.WriteLine($"Счет {AccountNumber}: текущий баланс = {Balance:C}");
+        }
+    }
+    class SavingsAccount : BankAccount
+    {
+        private decimal MinimumBalance { get; set; }
+
+        public SavingsAccount(string accountNumber, decimal initialBalance, decimal minimumBalance) : base(accountNumber, initialBalance)
+        {
+            MinimumBalance = minimumBalance;
+        }
+        public override void Withdraw(decimal amount)
+        {
+            if (amount <= 0)
+            {
+                Console.WriteLine("Сумма для снятие должна быть больше 0");
+                return;
+            }
+            if (Balance - amount < MinimumBalance)
+            {
+                Console.WriteLine($"Счет {AccountNumber}: снятие невозможно! Баланс не может быть ниже минимального уровня ({MinimumBalance:C})");
+                Console.WriteLine($"Доступно для снятия: {(Balance - MinimumBalance):C}");
+            }
+
+            else
+            {
+                Balance -= amount;
+                Console.WriteLine($"Счет {AccountNumber}: снято {amount:C}. Новый баланс: {Balance:C}");
+            }
+        }
+    }
+    class CheckingAccount : BankAccount 
+    {
+        private decimal WithdrawalFee { get; set; }
+
+        public CheckingAccount(string accountNumber, decimal initialBalance, decimal withdrawalFee)
+            : base(accountNumber, initialBalance)
+        {
+            WithdrawalFee = withdrawalFee;
+        }
+
+        public override void Withdraw(decimal amount)
+        {
+            if (amount <= 0)
+            {
+                Console.WriteLine("Сумма для снятия должна быть положительной!");
+                return;
+            }
+
+            decimal totalAmount = amount + WithdrawalFee;
+
+            if (Balance < totalAmount)
+            {
+                Console.WriteLine($"Счет {AccountNumber}: недостаточно средств! Требуется {totalAmount:C} (сумма {amount:C} + комиссия {WithdrawalFee:C})");
+                Console.WriteLine($"Доступно: {Balance:C}");
+            }
+            else
+            {
+                Balance -= totalAmount;
+                Console.WriteLine($"Счет {AccountNumber}: снято {amount:C} + комиссия {WithdrawalFee:C}. Новый баланс: {Balance:C}");
+            }
+        }
+    }
+    class CreditAccount : BankAccount
+    {
+        private decimal CreditLimit { get; set; }
+
+        public CreditAccount(string accountNumber, decimal initialBalance, decimal creditLimit)
+            : base(accountNumber, initialBalance)
+        {
+            CreditLimit = creditLimit;
+        }
+
+        public override void Withdraw(decimal amount)
+        {
+            if (amount <= 0)
+            {
+                Console.WriteLine("Сумма для снятия должна быть положительной!");
+                return;
+            }
+
+            if (Balance - amount < -CreditLimit)
+            {
+                Console.WriteLine($"Счет {AccountNumber}: снятие невозможно! Превышен кредитный лимит ({CreditLimit:C})");
+                Console.WriteLine($"Доступно для снятия: {(Balance + CreditLimit):C}");
+            }
+            else
+            {
+                Balance -= amount;
+                Console.WriteLine($"Счет {AccountNumber}: снято {amount:C}. Новый баланс: {Balance:C}");
+                if (Balance < 0)
+                {
+                    Console.WriteLine($"  (используется кредит: {Math.Abs(Balance):C} из {CreditLimit:C})");
+                }
+            }
+        }
+    }
+}
