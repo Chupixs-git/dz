@@ -1,0 +1,289 @@
+using System;
+
+namespace ConsoleApp3
+{
+
+    abstract class Delivery
+    {
+        public string Address { get; }
+        public string Recipient { get; }
+        public abstract int BaseCost { get; }
+        public abstract DateTime SendDate { get; }
+
+        public Delivery(string address, string recipient)
+        {
+            Address = address;
+            Recipient = recipient;
+        }
+
+        public abstract float CalculateCost();
+        public abstract float GetDeliveryTime();
+
+
+        public DateTime GetReceiveDate()
+        {
+            return SendDate.AddDays(GetDeliveryTime());
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine($"\n--- Информация о доставке ---");
+            Console.WriteLine($"Тип доставки: {GetType().Name}");
+            Console.WriteLine($"Получатель: {Recipient}");
+            Console.WriteLine($"Адрес: {Address}");
+            Console.WriteLine($"Стоимость: {CalculateCost():C}");
+            Console.WriteLine($"Дата отправки: {SendDate:dd.MM.yyyy}");
+            Console.WriteLine($"Время доставки: {GetDeliveryTime()} дней");
+            Console.WriteLine($"Дата получения: {GetReceiveDate():dd.MM.yyyy}");
+            Console.WriteLine("----------------------------");
+        }
+    }
+
+
+    class HomeDelivery : Delivery
+    {
+        private float Distance;
+        private float Weight;
+        private int baseCost = 400;
+        private DateTime sendDate;
+
+        public override int BaseCost
+        {
+            get { return baseCost; }
+        }
+
+        public override DateTime SendDate
+        {
+            get { return sendDate; }
+        }
+
+        public HomeDelivery(float distance, float weight, string address, string recipient, DateTime sendDate)
+            : base(address, recipient)
+        {
+            Distance = distance;
+            Weight = weight;
+            this.sendDate = sendDate;
+        }
+
+        public override float CalculateCost()
+        {
+            return Distance * Weight * BaseCost / 1000;
+        }
+
+        public override float GetDeliveryTime()
+        {
+            if (Distance < 100)
+            {
+                return 1;
+            }
+            else
+            {
+                return (float)Math.Ceiling(Distance / 100);
+            }
+        }
+    }
+
+
+    class PickPointDelivery : Delivery
+    {
+        private float Weight;
+        private int baseCost = 400;
+        private DateTime sendDate;
+
+        public override int BaseCost
+        {
+            get { return baseCost; }
+        }
+
+        public override DateTime SendDate
+        {
+            get { return sendDate; }
+        }
+
+        public PickPointDelivery(float weight, string address, string recipient, DateTime sendDate)
+            : base(address, recipient)
+        {
+            Weight = weight;
+            this.sendDate = sendDate;
+        }
+
+        public override float CalculateCost()
+        {
+            return 1000 + Weight * BaseCost;
+        }
+
+        public override float GetDeliveryTime()
+        {
+            return 7;
+        }
+    }
+
+
+    class ExpressDelivery : Delivery
+    {
+        private float Distance;
+        private float Weight;
+        private int baseCost = 400;
+        private DateTime sendDate;
+
+        public override int BaseCost
+        {
+            get { return baseCost; }
+        }
+
+        public override DateTime SendDate
+        {
+            get { return sendDate; }
+        }
+
+        public ExpressDelivery(float distance, float weight, string address, string recipient, DateTime sendDate)
+            : base(address, recipient)
+        {
+            Distance = distance;
+            Weight = weight;
+            this.sendDate = sendDate;
+        }
+
+        public override float CalculateCost()
+        {
+
+            return (Distance * Weight * BaseCost / 1000) * 2;
+        }
+
+        public override float GetDeliveryTime()
+        {
+
+            if (Distance < 300)
+            {
+                return 1;
+            }
+            else
+            {
+                return (float)Math.Ceiling(Distance / 300);
+            }
+        }
+    }
+
+
+    interface IUserInterface
+    {
+        void ShowMenu();
+        void CreateDelivery();
+        void ShowAllDeliveries();
+    }
+
+
+    class DeliveryManager : IUserInterface
+    {
+        private System.Collections.Generic.List<Delivery> deliveries = new System.Collections.Generic.List<Delivery>();
+
+        public void ShowMenu()
+        {
+            while (true)
+            {
+                Console.WriteLine("\n=== Система управления доставками ===");
+                Console.WriteLine("1. Создать новую доставку");
+                Console.WriteLine("2. Показать все доставки");
+                Console.WriteLine("3. Выход");
+                Console.Write("Выберите действие: ");
+
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        CreateDelivery();
+                        break;
+                    case "2":
+                        ShowAllDeliveries();
+                        break;
+                    case "3":
+                        Console.WriteLine("До свидания!");
+                        return;
+                    default:
+                        Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                        break;
+                }
+            }
+        }
+
+        public void CreateDelivery()
+        {
+            Console.WriteLine("\n--- Создание новой доставки ---");
+            Console.WriteLine("Выберите тип доставки:");
+            Console.WriteLine("1. Доставка на дом (HomeDelivery)");
+            Console.WriteLine("2. Доставка в пункт выдачи (PickPointDelivery)");
+            Console.WriteLine("3. Экспресс-доставка (ExpressDelivery)");
+            Console.Write("Ваш выбор: ");
+
+            string deliveryType = Console.ReadLine();
+
+            Console.Write("Введите адрес: ");
+            string address = Console.ReadLine();
+
+            Console.Write("Введите имя получателя: ");
+            string recipient = Console.ReadLine();
+
+            Console.Write("Введите вес (кг): ");
+            float weight = float.Parse(Console.ReadLine());
+
+            Console.Write("Введите дату отправки (дд.мм.гггг): ");
+            DateTime sendDate = DateTime.Parse(Console.ReadLine());
+
+            Delivery delivery = null;
+
+            switch (deliveryType)
+            {
+                case "1":
+                    Console.Write("Введите расстояние (км): ");
+                    float distance1 = float.Parse(Console.ReadLine());
+                    delivery = new HomeDelivery(distance1, weight, address, recipient, sendDate);
+                    break;
+                case "2":
+                    delivery = new PickPointDelivery(weight, address, recipient, sendDate);
+                    break;
+                case "3":
+                    Console.Write("Введите расстояние (км): ");
+                    float distance3 = float.Parse(Console.ReadLine());
+                    delivery = new ExpressDelivery(distance3, weight, address, recipient, sendDate);
+                    break;
+                default:
+                    Console.WriteLine("Неверный тип доставки.");
+                    return;
+            }
+
+            deliveries.Add(delivery);
+            Console.WriteLine("\nДоставка успешно создана!");
+            delivery.ShowInfo();
+        }
+
+        public void ShowAllDeliveries()
+        {
+            if (deliveries.Count == 0)
+            {
+                Console.WriteLine("\nНет созданных доставок.");
+                return;
+            }
+
+            Console.WriteLine("\n=== Все доставки ===");
+            for (int i = 0; i < deliveries.Count; i++)
+            {
+                Console.WriteLine($"\nДоставка #{i + 1}:");
+                deliveries[i].ShowInfo();
+            }
+        }
+    }
+}
+ static void Main(string[] args)
+ {
+
+     HomeDelivery delivery1 = new HomeDelivery(1000, 3, "New Yourk ,Volkin Strit", "Serpan",
+     new DateTime(1999, 12, 10));
+     delivery1.ShowInfo();
+     ExpressDelivery delivery2 = new ExpressDelivery(1000, 3, "New Yourk ,Volkin Strit", "Serpan",
+     new DateTime(1999, 12, 10));
+     delivery2.ShowInfo();
+     PickPointDelivery delivery3 = new PickPointDelivery(1000, "New Yourk ,Volkin Strit", "Serpan",
+     new DateTime(1999, 12, 10));
+     delivery3.ShowInfo();
+}
