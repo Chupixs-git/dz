@@ -1,0 +1,101 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp3
+{
+    internal class Calculaty2
+    {
+        class Program
+        {
+            static void Main()
+            {
+                DisplayHeader();
+
+                double num1 = GetNumber("первое");
+                double num2 = GetNumber("второе");
+                char operation = GetOperation();
+
+                double result = Calculate(num1, num2, operation);
+                DisplayResult(num1, num2, operation, result);
+            }
+
+            static void DisplayHeader()
+            {
+                Console.WriteLine("--- Улучшенный калькулятор ---");
+                Console.WriteLine("Доступные операции: +, -, *, /");
+            }
+
+            static double GetNumber(string numberName)
+            {
+                double number;
+
+                while (true)
+                {
+                    Console.Write($"Введите {numberName} число: ");
+                    string input = Console.ReadLine();
+
+                    if (double.TryParse(input, out number))
+                    {
+                        return number;
+                    }
+
+                    Console.WriteLine("Ошибка! Введите корректное число.");
+                }
+            }
+
+            static char GetOperation()
+            {
+                while (true)
+                {
+                    Console.Write("Введите символ операции: ");
+                    string input = Console.ReadLine();
+
+                    if (input.Length == 1)
+                    {
+                        char operation = input[0];
+
+                        switch (operation)
+                        {
+                            case '+':
+                            case '-':
+                            case '*':
+                            case '/':
+                                return operation;
+                        }
+                    }
+
+                    Console.WriteLine("Ошибка! Введите одну из операций: +, -, *, /");
+                }
+            }
+
+            static double Calculate(double a, double b, char operation)
+            {
+                switch (operation)
+                {
+                    case '+':
+                        return a + b;
+                    case '-':
+                        return a - b;
+                    case '*':
+                        return a * b;
+                    case '/':
+                        if (Math.Abs(b) < 0.000001)
+                        {
+                            throw new DivideByZeroException("Деление на ноль!");
+                        }
+                        return a / b;
+                    default:
+                        throw new InvalidOperationException("Неизвестная операция");
+                }
+            }
+
+            static void DisplayResult(double a, double b, char op, double result)
+            {
+                Console.WriteLine($"Результат: {a} {op} {b} = {result}");
+            }
+        }
+    }
+}
