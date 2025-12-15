@@ -1,1 +1,236 @@
+using ConsoleApp3;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
+namespace ConsoleApp3
+{
+    public class Human
+    {
+            private static int count = 0;
+
+            public string Name { get; set; }
+            public int Age { get; set; }
+
+            public Human(string name, int age)
+            {
+                Name = name;
+                Age = age;
+                count++;
+            }
+
+            public static int GetCount()
+            {
+                return count;
+            }
+    }
+
+    public class Program1
+    {
+        public static void Run()
+        {
+            Console.WriteLine("=== Задание 1: Класс 'Человек' ===");
+            Console.WriteLine($"Количество созданных объектов: {Human.GetCount()}");
+
+            Human person1 = new Human("Иван", 25);
+            Human person2 = new Human("Мария", 30);
+            Human person3 = new Human("Алексей", 35);
+
+            Console.WriteLine($"Количество созданных объектов: {Human.GetCount()}");
+
+            Human person4 = new Human("Ольга", 28);
+
+            Console.WriteLine($"Количество созданных объектов: {Human.GetCount()}");
+        }
+    }
+}
+/// <summary>
+/// //////////////////////////////////////////////////////////////////////////        2
+/// </summary>
+public class AreaCalculator
+{
+    private static int calculationCount = 0;
+
+    public static double TriangleByBaseHeight(double baseLength, double height)
+    {
+        calculationCount++;
+        return 0.5 * baseLength * height;
+    }
+
+    public static double TriangleByThreeSides(double a, double b, double c)
+    {
+        calculationCount++;
+        double p = (a + b + c) / 2;
+        return Math.Sqrt(p * (p - a) * (p - b) * (p - c));
+    }
+
+    public static double Rectangle(double length, double width)
+    {
+        calculationCount++;
+        return length * width;
+    }
+
+    public static double Square(double side)
+    {
+        calculationCount++;
+        return side * side;
+    }
+
+    public static double RhombusByDiagonals(double d1, double d2)
+    {
+        calculationCount++;
+        return 0.5 * d1 * d2;
+    }
+
+    public static double RhombusBySideAndHeight(double side, double height)
+    {
+        calculationCount++;
+        return side * height;
+    }
+
+    public static int GetCalculationCount()
+    {
+        return calculationCount;
+    }
+
+    public static void ResetCounter()
+    {
+        calculationCount = 0;
+    }
+}
+
+public class Program2
+{
+    public static void Run()
+    {
+        Console.WriteLine("\n=== Задание 2: Калькулятор площади фигур ===");
+
+        double triangle1 = AreaCalculator.TriangleByBaseHeight(10, 5);
+        Console.WriteLine($"Площадь треугольника (основание 10, высота 5): {triangle1}");
+
+        double triangle2 = AreaCalculator.TriangleByThreeSides(3, 4, 5);
+        Console.WriteLine($"Площадь треугольника (стороны 3,4,5): {triangle2}");
+
+        double rectangle = AreaCalculator.Rectangle(8, 6);
+        Console.WriteLine($"Площадь прямоугольника (8x6): {rectangle}");
+
+        double square = AreaCalculator.Square(7);
+        Console.WriteLine($"Площадь квадрата (сторона 7): {square}");
+
+        double rhombus1 = AreaCalculator.RhombusByDiagonals(8, 6);
+        Console.WriteLine($"Площадь ромба (диагонали 8 и 6): {rhombus1}");
+
+        double rhombus2 = AreaCalculator.RhombusBySideAndHeight(5, 4);
+        Console.WriteLine($"Площадь ромба (сторона 5, высота 4): {rhombus2}");
+
+        Console.WriteLine($"\nОбщее количество вычислений: {AreaCalculator.GetCalculationCount()}");
+    }
+}
+//////////////////////////////////////////////////////////////////////////       3  
+public class MathOperations
+{
+    public static int Max(int a, int b, int c, int d)
+    {
+        int max1 = Math.Max(a, b);
+        int max2 = Math.Max(c, d);
+        return Math.Max(max1, max2);
+    }
+
+    public static double Max(double a, double b, double c, double d)
+    {
+        double max1 = Math.Max(a, b);
+        double max2 = Math.Max(c, d);
+        return Math.Max(max1, max2);
+    }
+
+    public static int Min(int a, int b, int c, int d)
+    {
+        int min1 = Math.Min(a, b);
+        int min2 = Math.Min(c, d);
+        return Math.Min(min1, min2);
+    }
+
+    public static double Min(double a, double b, double c, double d)
+    {
+        double min1 = Math.Min(a, b);
+        double min2 = Math.Min(c, d);
+        return Math.Min(min1, min2);
+    }
+
+    public static double Average(int a, int b, int c, int d)
+    {
+        return (a + b + c + d) / 4.0;
+    }
+
+    public static double Average(double a, double b, double c, double d)
+    {
+        return (a + b + c + d) / 4.0;
+    }
+
+    public static long Factorial(int n)
+    {
+        if (n < 0)
+            throw new ArgumentException("Факториал определен только для неотрицательных чисел");
+
+        if (n == 0 || n == 1)
+            return 1;
+
+        long result = 1;
+        for (int i = 2; i <= n; i++)
+        {
+            result *= i;
+        }
+        return result;
+    }
+}
+
+public class Program3
+{
+    public static void Run()
+    {
+        Console.WriteLine("\n=== Задание 3: Математические операции ===");
+
+        int maxInt = MathOperations.Max(5, 12, 8, 3);
+        Console.WriteLine($"Максимум из (5, 12, 8, 3): {maxInt}");
+
+        double maxDouble = MathOperations.Max(4.5, 7.2, 6.8, 9.1);
+        Console.WriteLine($"Максимум из (4.5, 7.2, 6.8, 9.1): {maxDouble}");
+
+        int minInt = MathOperations.Min(5, 12, 8, 3);
+        Console.WriteLine($"Минимум из (5, 12, 8, 3): {minInt}");
+
+        double minDouble = MathOperations.Min(4.5, 7.2, 6.8, 9.1);
+        Console.WriteLine($"Минимум из (4.5, 7.2, 6.8, 9.1): {minDouble}");
+
+        double avgInt = MathOperations.Average(10, 20, 30, 40);
+        Console.WriteLine($"Среднее арифметическое из (10, 20, 30, 40): {avgInt}");
+
+        double avgDouble = MathOperations.Average(1.5, 2.5, 3.5, 4.5);
+        Console.WriteLine($"Среднее арифметическое из (1.5, 2.5, 3.5, 4.5): {avgDouble}");
+
+        Console.WriteLine($"Факториал 5: {MathOperations.Factorial(5)}");
+        Console.WriteLine($"Факториал 7: {MathOperations.Factorial(7)}");
+
+        try
+        {
+            Console.WriteLine($"Факториал 0: {MathOperations.Factorial(0)}");
+            Console.WriteLine($"Факториал 10: {MathOperations.Factorial(10)}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка: {ex.Message}");
+        }
+    }
+}
+
+public class MainProgram
+{
+    public static void Main()
+    {
+        Program1.Run();
+        Program2.Run();
+        Program3.Run();
+    }
+}
