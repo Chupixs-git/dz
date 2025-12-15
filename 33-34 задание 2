@@ -1,0 +1,402 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp3
+{
+    internal class ShoppingSystem
+    {
+        public abstract class Product
+        {
+            public int Id { get; protected set; }
+            public string Name { get; protected set; }
+            public decimal Price { get; protected set; }
+            public string Manufacturer { get; protected set; }
+
+            protected Product(int id, string name, decimal price, string manufacturer)
+            {
+                if (id <= 0)
+                    throw new ArgumentException("ID должен быть положительным");
+
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new ArgumentException("Название не может быть пустым");
+
+                if (price < 0)
+                    throw new ArgumentException("Цена не может быть отрицательной");
+
+                if (string.IsNullOrWhiteSpace(manufacturer))
+                    throw new ArgumentException("Производитель не может быть пустым");
+
+                Id = id;
+                Name = name;
+                Price = price;
+                Manufacturer = manufacturer;
+            }
+
+            public abstract void DisplayInfo();
+
+            
+            public virtual decimal ApplyDiscount(decimal discountPercent)
+            {
+                if (discountPercent < 0 || discountPercent > 100)
+                    throw new ArgumentException("Скидка должна быть от 0 до 100%");
+
+                return Price * (1 - discountPercent / 100);
+            }
+
+            public override string ToString()
+            {
+                return $"{Name} - {Price:C}";
+            }
+        }
+
+       
+        public class Electronics : Product
+        {
+            public int WarrantyMonths { get; private set; }
+            public string Model { get; private set; }
+
+            public Electronics(int id, string name, decimal price, string manufacturer,
+                              string model, int warrantyMonths)
+                : base(id, name, price, manufacturer)
+            {
+                if (warrantyMonths < 0)
+                    throw new ArgumentException("Гарантия не может быть отрицательной");
+
+                Model = model;
+                WarrantyMonths = warrantyMonths;
+            }
+
+            public override void DisplayInfo()
+            {
+                Console.WriteLine($"ЭЛЕКТРОНИКА: {Name}");
+                Console.WriteLine($"  Модель: {Model}");
+                Console.WriteLine($"  Производитель: {Manufacturer}");
+                Console.WriteLine($"  Цена: {Price:C}");
+                Console.WriteLine($"  Гарантия: {WarrantyMonths} месяцев");
+            }
+        }
+
+   
+        public class Book : Product
+        {
+            public string Author { get; private set; }
+            public int Pages { get; private set; }
+            public string ISBN { get; private set; }
+
+            public Book(int id, string name, decimal price, string manufacturer,
+                       string author, int pages, string isbn)
+                : base(id, name, price, manufacturer)
+            {
+                if (pages <= 0)
+                    throw new ArgumentException("Количество страниц должно быть положительным");
+
+                Author = author;
+                Pages = pages;
+                ISBN = isbn;
+            }
+
+            public override void DisplayInfo()
+            {
+                Console.WriteLine($"КНИГА: {Name}");
+                Console.WriteLine($"  Автор: {Author}");
+                Console.WriteLine($"  Издательство: {Manufacturer}");
+                Console.WriteLine($"  Страниц: {Pages}");
+                Console.WriteLine($"  ISBN: {ISBN}");
+                Console.WriteLine($"  Цена: {Price:C}");
+            }
+
+           
+            public override decimal ApplyDiscount(decimal discountPercent)
+            {
+                decimal baseDiscount = base.ApplyDiscount(discountPercent);
+                return Math.Max(baseDiscount, Price * 0.7m); 
+            }
+        }
+
+        
+        public interface IShoppingCart
+        {
+            void AddProduct(Product product, int quantity);
+            bool RemoveProduct(int productId, int quantity);
+            decimal CalculateTotal();
+            void DisplayCart();
+            int GetItemCount();
+        }
+
+       
+        public class CartItem
+        {
+            public Product Product { get; private set; }
+            public int Quantity { get; private set; }
+
+            public CartItem(Product product, int quantity)
+            {
+                Product = product ?? throw new ArgumentNullException(nameof(product));
+                Quantity = quantity;
+            }
+
+            public decimal GetTotalPrice()
+            {
+                return Product.Price * Quantity;
+            }
+
+            public void IncreaseQuantity(int amount)
+            {
+                if (amount <= 0)
+                    throw new ArgumentException("Количество должно быть положительным");
+
+                Quantity += amount;
+            }
+
+            public bool DecreaseQuantity(int amount)
+            {
+                if (amount <= 0)
+                    throw new ArgumentException("Количество должно быть положительным");
+
+                if (Quantity <= amount)
+                {
+                    return false; 
+                }
+
+                Quantity -= amount;
+                return true;
+            }
+
+            public override string ToString()
+            {
+                return $"{Product.Name} x{Quantity} = {GetTotalPrice():C}";
+            }
+        }
+
+        
+        public class ShoppingCart : IShoppingCart
+        {
+            private List<CartItem> items;
+            private string customerName;
+            private DateTime createdDate;
+
+            public string CustomerName => customerName;
+            public DateTime CreatedDate => createdDate;
+
+            public ShoppingCart(string customerName)
+            {
+                if (string.IsNullOrWhiteSpace(customerName))
+                    throw new ArgumentException("Имя покупателя не может быть пустым");
+
+                this.customerName = customerName;
+                items = new List<CartItem>();
+                createdDate = DateTime.Now;
+            }
+
+           
+            public void AddProduct(Product product, int quantity = 1)
+            {
+                if (product == null)
+                    throw new ArgumentNullException(nameof(product));
+
+                if (quantity <= 0)
+                    throw new ArgumentException("Количество должно быть положительным");
+
+               
+                foreach (var item in items)
+                {
+                    if (item.Product.Id == product.Id)
+                    {
+                        item.IncreaseQuantity(quantity);
+                        Console.WriteLine($"Добавлено {quantity} шт. к товару '{product.Name}'");
+                        return;
+                    }
+                }
+
+                
+                items.Add(new CartItem(product, quantity));
+                Console.WriteLine($"Добавлен новый товар: '{product.Name}' x{quantity}");
+            }
+
+       
+            public bool RemoveProduct(int productId, int quantity = 1)
+            {
+                if (quantity <= 0)
+                    throw new ArgumentException("Количество должно быть положительным");
+
+                for (int i = 0; i < items.Count; i++)
+                {
+                    if (items[i].Product.Id == productId)
+                    {
+                        if (!items[i].DecreaseQuantity(quantity))
+                        {
+                            
+                            Console.WriteLine($"Товар '{items[i].Product.Name}' удален из корзины");
+                            items.RemoveAt(i);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Удалено {quantity} шт. товара '{items[i].Product.Name}'");
+                        }
+                        return true;
+                    }
+                }
+
+                Console.WriteLine($"Товар с ID {productId} не найден в корзине");
+                return false;
+            }
+
+            public decimal CalculateTotal()
+            {
+                decimal total = 0;
+                foreach (var item in items)
+                {
+                    total += item.GetTotalPrice();
+                }
+                return total;
+            }
+
+            
+            public void DisplayCart()
+            {
+                Console.WriteLine($"\n=== КОРЗИНА ПОКУПАТЕЛЯ: {customerName} ===");
+                Console.WriteLine($"Создана: {createdDate:dd.MM.yyyy HH:mm}");
+
+                if (items.Count == 0)
+                {
+                    Console.WriteLine("Корзина пуста");
+                    return;
+                }
+
+                Console.WriteLine("\nСОДЕРЖИМОЕ КОРЗИНЫ:");
+                for (int i = 0; i < items.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {items[i]}");
+                }
+
+                Console.WriteLine($"\nИТОГО: {CalculateTotal():C}");
+                Console.WriteLine($"Общее количество товаров: {GetItemCount()}");
+            }
+
+           
+            public int GetItemCount()
+            {
+                int total = 0;
+                foreach (var item in items)
+                {
+                    total += item.Quantity;
+                }
+                return total;
+            }
+
+           
+            public void ClearCart()
+            {
+                items.Clear();
+                Console.WriteLine("Корзина очищена");
+            }
+
+            
+            public void DisplayProductsInfo()
+            {
+                Console.WriteLine("\n=== ДЕТАЛЬНАЯ ИНФОРМАЦИЯ О ТОВАРАХ ===");
+                foreach (var item in items)
+                {
+                    item.Product.DisplayInfo();
+                    Console.WriteLine($"Количество: {item.Quantity}");
+                    Console.WriteLine();
+                }
+            }
+        }
+
+       
+        public class StoreManager
+        {
+            private List<Product> availableProducts;
+            private ShoppingCart currentCart;
+
+            public StoreManager(string customerName)
+            {
+                currentCart = new ShoppingCart(customerName);
+                availableProducts = new List<Product>();
+                InitializeProducts();
+            }
+
+            private void InitializeProducts()
+            {
+                
+                availableProducts.Add(new Electronics(1, "Ноутбук HP", 50000, "HP",
+                    "Pavilion 15", 24));
+                availableProducts.Add(new Electronics(2, "Смартфон Samsung", 30000, "Samsung",
+                    "Galaxy S21", 12));
+                availableProducts.Add(new Electronics(3, "Наушники Sony", 8000, "Sony",
+                    "WH-1000XM4", 18));
+
+              
+                availableProducts.Add(new Book(4, "Война и мир", 1500, "Эксмо",
+                    "Лев Толстой", 1225, "978-5-699-75554-7"));
+                availableProducts.Add(new Book(5, "C# для начинающих", 2500, "Питер",
+                    "Иванов И.И.", 450, "978-5-4461-1234-5"));
+            }
+
+            public void RunDemo()
+            {
+                try
+                {
+                    Console.WriteLine("=== ДЕМО ИНТЕРНЕТ-МАГАЗИНА ===\n");
+
+                   
+                    Console.WriteLine("ДОСТУПНЫЕ ТОВАРЫ:");
+                    for (int i = 0; i < availableProducts.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {availableProducts[i]}");
+                    }
+
+                   
+                    Console.WriteLine("\nДОБАВЛЕНИЕ ТОВАРОВ В КОРЗИНУ:");
+                    currentCart.AddProduct(availableProducts[0], 1); 
+                    currentCart.AddProduct(availableProducts[1], 2); 
+                    currentCart.AddProduct(availableProducts[3], 1); 
+                    currentCart.AddProduct(availableProducts[4], 3); 
+
+                   
+                    currentCart.DisplayCart();
+
+                    
+                    currentCart.DisplayProductsInfo();
+
+                   
+                    Console.WriteLine("\nУДАЛЕНИЕ ТОВАРОВ:");
+                    currentCart.RemoveProduct(4, 1); 
+                    currentCart.RemoveProduct(2, 1); 
+
+                 
+                    currentCart.DisplayCart();
+
+                    
+                    Console.WriteLine("\nРАСЧЕТ СО СКИДКАМИ:");
+                    Book csharpBook = (Book)availableProducts[4];
+                    decimal discountedPrice = csharpBook.ApplyDiscount(20);
+                    Console.WriteLine($"Цена книги '{csharpBook.Name}' со скидкой 20%: {discountedPrice:C}");
+
+                 
+                    Console.WriteLine("\nОЧИСТКА КОРЗИНЫ:");
+                    currentCart.ClearCart();
+                    currentCart.DisplayCart();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка: {ex.Message}");
+                }
+            }
+        }
+        class Program
+        {
+            static void Main(string[] args)
+            {
+                StoreManager store = new StoreManager("Иванов Иван");
+                store.RunDemo();
+
+                Console.WriteLine("\nНажмите любую клавишу для выхода...");
+                Console.ReadKey();
+            }
+        }
+   
