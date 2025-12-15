@@ -1,0 +1,157 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp3
+{
+    public class User
+    {
+        private static List<string> usedUsernames = new List<string>();
+
+        public string Username { get; private set; }
+        public DateTime RegistrationDate { get; private set; }
+
+        public User(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("Имя пользователя не может быть пустым");
+
+            if (usedUsernames.Contains(username))
+                throw new ArgumentException($"Имя пользователя '{username}' уже занято");
+
+            Username = username;
+            RegistrationDate = DateTime.Now;
+            usedUsernames.Add(username);
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Пользователь: {Username}");
+            Console.WriteLine($"Дата регистрации: {RegistrationDate:dd.MM.yyyy HH:mm}");
+        }
+
+        public static bool IsUsernameAvailable(string username)
+        {
+            return !usedUsernames.Contains(username);
+        }
+    }
+
+    public class PremiumUser : User
+    {
+        public static decimal SubscriptionPrice { get; set; } = 299.99m;
+
+        public DateTime SubscriptionExpiryDate { get; private set; }
+
+        public PremiumUser(string username, int subscriptionMonths = 1)
+            : base(username)
+        {
+            if (subscriptionMonths <= 0)
+                throw new ArgumentException("Количество месяцев должно быть положительным");
+
+            SubscriptionExpiryDate = DateTime.Now.AddMonths(subscriptionMonths);
+        }
+
+        public bool IsSubscriptionActive()
+        {
+            return DateTime.Now <= SubscriptionExpiryDate;
+        }
+
+        public void ExtendSubscription(int months)
+        {
+            if (months <= 0)
+                throw new ArgumentException("Количество месяцев должно быть положительным");
+
+            if (IsSubscriptionActive())
+            {
+                SubscriptionExpiryDate = SubscriptionExpiryDate.AddMonths(months);
+            }
+            else
+            {
+                SubscriptionExpiryDate = DateTime.Now.AddMonths(months);
+            }
+
+            Console.WriteLine($"Подписка продлена на {months} месяц(ев). Новый срок: {SubscriptionExpiryDate:dd.MM.yyyy HH:mm}");
+        }
+
+        public new void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine($"Дата окончания подписки: {SubscriptionExpiryDate:dd.MM.yyyy HH:mm}");
+            Console.WriteLine($"Статус подписки: {(IsSubscriptionActive() ? "АКТИВНА" : "НЕАКТИВНА")}");
+            Console.WriteLine($"Стоимость подписки: {SubscriptionPrice:C} в месяц");
+
+            if (IsSubscriptionActive())
+            {
+                TimeSpan remaining = SubscriptionExpiryDate - DateTime.Now;
+                Console.WriteLine($"Осталось дней: {remaining.Days}");
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("=== СИСТЕМА УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯМИ ===\n");
+
+            try
+            {
+                Console.WriteLine("=== СОЗДАНИЕ ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ ===");
+
+                User user1 = new User("ivan_2024");
+                user1.DisplayInfo();
+                Console.WriteLine();
+
+                User user2 = new User("maria_pro");
+                user2.DisplayInfo();
+                Console.WriteLine();
+
+                Console.WriteLine("=== СОЗДАНИЕ ПРЕМИУМ ПОЛЬЗОВАТЕЛЕЙ ===");
+
+                PremiumUser premiumUser1 = new PremiumUser("alex_vip", 3);
+                premiumUser1.DisplayInfo();
+                Console.WriteLine();
+
+                PremiumUser premiumUser2 = new PremiumUser("olga_gold", 1);
+                premiumUser2.DisplayInfo();
+                Console.WriteLine();
+
+                Console.WriteLine("=== ИЗМЕНЕНИЕ СТОИМОСТИ ПОДПИСКИ ===");
+                PremiumUser.SubscriptionPrice = 349.99m;
+                Console.WriteLine($"Новая стоимость подписки: {PremiumUser.SubscriptionPrice:C}");
+                Console.WriteLine();
+
+                Console.WriteLine("=== ПРОДЛЕНИЕ ПОДПИСКИ ===");
+                premiumUser1.ExtendSubscription(2);
+                premiumUser1.DisplayInfo();
+                Console.WriteLine();
+
+                Console.WriteLine("=== ПРОВЕРКА ДОСТУПНОСТИ ИМЕН ===");
+                Console.WriteLine($"Доступно ли имя 'ivan_2024': {User.IsUsernameAvailable("ivan_2024")}");
+                Console.WriteLine($"Доступно ли имя 'new_user': {User.IsUsernameAvailable("new_user")}");
+                Console.WriteLine();
+
+                Console.WriteLine("=== ПРОВЕРКА НА УНИКАЛЬНОСТЬ ИМЕН ===");
+                try
+                {
+                    User user3 = new User("ivan_2024");
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine($"Ошибка: {ex.Message}");
+                }
+
+                Console.WriteLine("\n=== ТЕСТИРОВАНИЕ С ИСТЕКШЕЙ ПОДПИСКОЙ ===");
+                PremiumUser oldPremium = new PremiumUser("old_user", 0);
+                Console.WriteLine($"Статус подписки сразу после создания: {oldPremium.IsSubscriptionActive()}");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
+        }
+    }
+}
