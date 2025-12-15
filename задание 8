@@ -1,0 +1,91 @@
+ internal class Student
+ {
+     public class Student2
+     {
+         public string FirstName { get; set; }
+         public string LastName { get; set; }
+
+         private int _age;
+
+         public int Age
+         {
+             get { return _age; }
+             set
+             {
+                 if (value >= 6 && value <= 100)
+                 {
+                     _age = value;
+                 }
+                 else
+                 {
+                     Console.WriteLine($"Ошибка: возраст {value} некорректен. Допустимый диапазон: 6-100 лет.");
+                 }
+             }
+         }
+
+         public string FullName
+         {
+             get { return $"{FirstName} {LastName}"; }
+         }
+
+         public Student2(string firstName, string lastName, int age)
+         {
+             FirstName = firstName;
+             LastName = lastName;
+             Age = age;
+         }
+
+         public void DisplayInfo()
+         {
+             Console.WriteLine($"Студент: {FullName}");
+             Console.WriteLine($"Возраст: {Age}");
+             Console.WriteLine();
+         }
+     }
+
+     class Program
+     {
+         static void Main()
+         {
+             Console.WriteLine("=== Тестирование класса Student2 ===");
+             Console.WriteLine();
+
+             Student2 student1 = new Student2("Иван", "Петров", 20);
+             Console.WriteLine("Создан студент 1:");
+             student1.DisplayInfo();
+
+             Student2 student2 = new Student2("Мария", "Сидорова", 25);
+             Console.WriteLine("Создан студент 2:");
+             student2.DisplayInfo();
+
+             Console.WriteLine("=== Тестирование валидации возраста ===");
+
+             Student2 student3 = new Student2("Алексей", "Иванов", 5);
+             Console.WriteLine("Попытка создать студента с возрастом 5 лет:");
+             Console.WriteLine($"Возраст студента: {student3.Age}");
+             Console.WriteLine();
+
+             Student2 student4 = new Student2("Ольга", "Смирнова", 101);
+             Console.WriteLine("Попытка создать студента с возрастом 101 год:");
+             Console.WriteLine($"Возраст студента: {student4.Age}");
+             Console.WriteLine();
+
+             Console.WriteLine("=== Тестирование изменения свойств ===");
+
+             student1.FirstName = "Петр";
+             student1.LastName = "Иванов";
+             student1.Age = 22;
+             Console.WriteLine("Измененные данные студента 1:");
+             student1.DisplayInfo();
+
+             Console.WriteLine("Попытка установить некорректный возраст:");
+             student1.Age = 150;
+             Console.WriteLine($"Текущий возраст: {student1.Age}");
+             Console.WriteLine();
+
+             Console.WriteLine("=== Тестирование свойства FullName ===");
+             Console.WriteLine($"Полное имя студента 1: {student1.FullName}");
+             Console.WriteLine($"Полное имя студента 2: {student2.FullName}");
+         }
+     }
+ }
