@@ -1,0 +1,174 @@
+
+using System;
+
+namespace RPGEquipmentSystem
+{
+    public abstract class Item
+    {
+        private string _name;
+
+        protected Item(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Название предмета не может быть пустым");
+            
+            _name = name;
+        }
+
+        public string Name
+        {
+            get { return _name; }
+        }
+
+        public abstract void Use();
+    }
+
+    public class Weapon : Item
+    {
+        private int _damage;
+        private float _attackSpeed;
+
+        public Weapon(string name, int damage, float attackSpeed) : base(name)
+        {
+            if (damage < 0)
+                throw new ArgumentException("Урон не может быть отрицательным");
+            if (attackSpeed <= 0)
+                throw new ArgumentException("Скорость атаки должна быть положительной");
+            
+            _damage = damage;
+            _attackSpeed = attackSpeed;
+        }
+
+        public int Damage
+        {
+            get { return _damage; }
+        }
+
+        public float AttackSpeed
+        {
+            get { return _attackSpeed; }
+        }
+
+        public override void Use()
+        {
+            Console.WriteLine($"{Name}: Нанесено {_damage} урона со скоростью {_attackSpeed} удар/сек");
+        }
+    }
+
+    public class Armor : Item
+    {
+        private int _defense;
+        private int _durability;
+
+        public Armor(string name, int defense, int durability) : base(name)
+        {
+            if (defense < 0)
+                throw new ArgumentException("Защита не может быть отрицательной");
+            if (durability <= 0)
+                throw new ArgumentException("Прочность должна быть положительной");
+            
+            _defense = defense;
+            _durability = durability;
+        }
+
+        public int Defense
+        {
+            get { return _defense; }
+        }
+
+        public int Durability
+        {
+            get { return _durability; }
+        }
+
+        public void TakeDamage(int damage)
+        {
+            if (damage < 0)
+                return;
+
+            int actualDamage = Math.Max(0, damage - _defense);
+            _durability = Math.Max(0, _durability - actualDamage);
+        }
+
+        public override void Use()
+        {
+            Console.WriteLine($"{Name}: Активирована защита {_defense}, прочность {_durability}");
+        }
+    }
+
+    public class Potion : Item
+    {
+        private int _healAmount;
+        private int _effectDuration;
+        private string _effectType;
+
+        public Potion(string name, int healAmount, int effectDuration, string effectType) : base(name)
+        {
+            if (healAmount < 0)
+                throw new ArgumentException("Количество здоровья не может быть отрицательным");
+            if (effectDuration < 0)
+                throw new ArgumentException("Длительность эффекта не может быть отрицательной");
+            if (string.IsNullOrWhiteSpace(effectType))
+                throw new ArgumentException("Тип эффекта не может быть пустым");
+            
+            _healAmount = healAmount;
+            _effectDuration = effectDuration;
+            _effectType = effectType;
+        }
+
+        public int HealAmount
+        {
+            get { return _healAmount; }
+        }
+
+        public int EffectDuration
+        {
+            get { return _effectDuration; }
+        }
+
+        public string EffectType
+        {
+            get { return _effectType; }
+        }
+
+        public override void Use()
+        {
+            Console.WriteLine($"{Name}: Восстановлено {_healAmount} HP, эффект '{_effectType}' длится {_effectDuration} сек");
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+                Item[] inventory = new Item[]
+                {
+                    new Weapon("Меч дракона", 50, 1.5f),
+                    new Armor("Доспех рыцаря", 30, 100),
+                    new Potion("Зелье здоровья", 30, 0, "лечение"),
+                    new Weapon("Лук охотника", 35, 2.0f),
+                    new Potion("Зелье силы", 0, 60, "усиление атаки")
+                };
+
+                foreach (var item in inventory)
+                {
+                    item.Use();
+                }
+
+                Armor armor = new Armor("Тестовые доспехи", 10, 50);
+                Console.WriteLine($"\nБроня до повреждения: {armor.Durability}");
+                armor.TakeDamage(25);
+                Console.WriteLine($"Броня после повреждения 25 урона: {armor.Durability}");
+                armor.TakeDamage(50);
+                Console.WriteLine($"Броня после повреждения 50 урона: {armor.Durability}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка: {ex.Message}");
+            }
+        }
+    }
+}
+```
