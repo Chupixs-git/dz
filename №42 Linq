@@ -1,0 +1,235 @@
+using System;
+using System.Collections.Generic;
+
+namespace LINQExamples
+{
+    public class Order
+    {
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Amount { get; set; }
+        public int ClientId { get; set; }
+        public string Status { get; set; }
+
+        public Order(int id, DateTime date, decimal amount, int clientId, string status = "В обработке")
+        {
+            Id = id;
+            Date = date;
+            Amount = amount;
+            ClientId = clientId;
+            Status = status;
+        }
+    }
+
+    public class Book
+    {
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public int Year { get; set; }
+
+        public Book(string title, string author, int year)
+        {
+            Title = title;
+            Author = author;
+            Year = year;
+        }
+    }
+
+    public class BookInfo
+    {
+        public string Title { get; set; }
+        public int Year { get; set; }
+
+        public BookInfo(string title, int year)
+        {
+            Title = title;
+            Year = year;
+        }
+    }
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Position { get; set; }
+
+        public Employee(int id, string name, string position)
+        {
+            Id = id;
+            Name = name;
+            Position = position;
+        }
+    }
+
+    public class Project
+    {
+        public int EmployeeId { get; set; }
+        public string ProjectName { get; set; }
+        public int Duration { get; set; }
+
+        public Project(int employeeId, string projectName, int duration)
+        {
+            EmployeeId = employeeId;
+            ProjectName = projectName;
+            Duration = duration;
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("=== Пример 1: Группировка и агрегация заказов по месяцам ===");
+            List<Order> orders = new List<Order>
+            {
+                new Order(1, new DateTime(2024, 1, 15), 1500.50m, 101),
+                new Order(2, new DateTime(2024, 1, 20), 800.00m, 102),
+                new Order(3, new DateTime(2024, 2, 5), 1200.00m, 101),
+                new Order(4, new DateTime(2024, 2, 18), 950.75m, 103),
+                new Order(5, new DateTime(2024, 3, 10), 2000.00m, 102),
+                new Order(6, new DateTime(2024, 3, 25), 750.25m, 101),
+                new Order(7, new DateTime(2024, 1, 30), 1800.00m, 103)
+            };
+
+            Dictionary<string, decimal> monthlyTotals = new Dictionary<string, decimal>();
+            Dictionary<string, int> monthlyCounts = new Dictionary<string, int>();
+
+            foreach (Order order in orders)
+            {
+                string monthKey = order.Date.Year + "-" + order.Date.Month.ToString("D2");
+                
+                if (monthlyTotals.ContainsKey(monthKey))
+                {
+                    monthlyTotals[monthKey] += order.Amount;
+                    monthlyCounts[monthKey]++;
+                }
+                else
+                {
+                    monthlyTotals[monthKey] = order.Amount;
+                    monthlyCounts[monthKey] = 1;
+                }
+            }
+
+            List<string> sortedMonths = new List<string>(monthlyTotals.Keys);
+            sortedMonths.Sort();
+
+            foreach (string month in sortedMonths)
+            {
+                Console.WriteLine("Месяц: " + month + 
+                                 ", Сумма: " + monthlyTotals[month].ToString("C2") + 
+                                 ", Заказов: " + monthlyCounts[month]);
+            }
+
+            Console.WriteLine("\n=== Пример 2: Проекция книг (название и год) ===");
+            List<Book> books = new List<Book>
+            {
+                new Book("Война и мир", "Лев Толстой", 1869),
+                new Book("Преступление и наказание", "Фёдор Достоевский", 1866),
+                new Book("Мастер и Маргарита", "Михаил Булгаков", 1967),
+                new Book("1984", "Джордж Оруэлл", 1949)
+            };
+
+            List<BookInfo> bookProjections = new List<BookInfo>();
+            foreach (Book book in books)
+            {
+                bookProjections.Add(new BookInfo(book.Title, book.Year));
+            }
+
+            foreach (BookInfo book in bookProjections)
+            {
+                Console.WriteLine("Название: " + book.Title + ", Год: " + book.Year);
+            }
+
+            Console.WriteLine("\n=== Пример 3: Объединение сотрудников и проектов ===");
+            List<Employee> employees = new List<Employee>
+            {
+                new Employee(1, "Иван Иванов", "Разработчик"),
+                new Employee(2, "Мария Петрова", "Дизайнер"),
+                new Employee(3, "Алексей Сидоров", "Менеджер")
+            };
+
+            List<Project> projects = new List<Project>
+            {
+                new Project(1, "Система управления", 180),
+                new Project(1, "Мобильное приложение", 90),
+                new Project(2, "Дизайн сайта", 60),
+                new Project(3, "Управление проектом", 120)
+            };
+
+            List<string> employeeProjectInfo = new List<string>();
+            
+            foreach (Employee employee in employees)
+            {
+                foreach (Project project in projects)
+                {
+                    if (employee.Id == project.EmployeeId)
+                    {
+                        string info = "Сотрудник: " + employee.Name + 
+                                     ", Должность: " + employee.Position + 
+                                     ", Проект: " + project.ProjectName + 
+                                     ", Длительность: " + project.Duration + " дней";
+                        employeeProjectInfo.Add(info);
+                    }
+                }
+            }
+
+            foreach (string info in employeeProjectInfo)
+            {
+                Console.WriteLine(info);
+            }
+
+            Console.WriteLine("\n=== Пример 4: Использование операторов Any и All ===");
+            List<Order> orders2 = new List<Order>
+            {
+                new Order(1, new DateTime(2024, 1, 1), 500.00m, 101, "Выполнен"),
+                new Order(2, new DateTime(2024, 1, 2), 1500.00m, 102, "Выполнен"),
+                new Order(3, new DateTime(2024, 1, 3), 800.00m, 103, "В обработке"),
+                new Order(4, new DateTime(2024, 1, 4), 1200.00m, 104, "Выполнен")
+            };
+
+            bool hasLargeOrder = false;
+            foreach (Order order in orders2)
+            {
+                if (order.Amount > 1000)
+                {
+                    hasLargeOrder = true;
+                    break;
+                }
+            }
+
+            bool allCompleted = true;
+            foreach (Order order in orders2)
+            {
+                if (order.Status != "Выполнен")
+                {
+                    allCompleted = false;
+                    break;
+                }
+            }
+
+            Console.WriteLine("Есть хотя бы один заказ > 1000: " + hasLargeOrder);
+            Console.WriteLine("Все заказы выполнены: " + allCompleted);
+
+            Console.WriteLine("\n=== Пример 5: Использование Distinct ===");
+            List<int> numbers = new List<int> { 1, 2, 3, 2, 1, 4, 5, 3, 6, 7, 7, 8 };
+            
+            Dictionary<int, bool> uniqueDict = new Dictionary<int, bool>();
+            foreach (int number in numbers)
+            {
+                if (!uniqueDict.ContainsKey(number))
+                {
+                    uniqueDict[number] = true;
+                }
+            }
+            
+            List<int> uniqueNumbers = new List<int>(uniqueDict.Keys);
+            
+            Console.Write("Уникальные значения: ");
+            foreach (int number in uniqueNumbers)
+            {
+                Console.Write(number + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+}
