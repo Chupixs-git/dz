@@ -1,0 +1,336 @@
+using System;
+using System.Collections.Generic;
+
+namespace SmartHomeSystem
+{
+    public interface IDevice
+    {
+        string Name { get; }
+        bool IsConnected { get; }
+        bool IsOn { get; }
+        void Connect();
+        void Disconnect();
+        void TurnOn();
+        void TurnOff();
+        void PerformAction();
+    }
+
+    public abstract class BaseDevice : IDevice
+    {
+        public string Name { get; private set; }
+        public bool IsConnected { get; protected set; }
+        public bool IsOn { get; protected set; }
+
+        protected BaseDevice(string name)
+        {
+            Name = name;
+            IsConnected = false;
+            IsOn = false;
+        }
+
+        public virtual void Connect()
+        {
+            if (!IsConnected)
+            {
+                IsConnected = true;
+                Console.WriteLine($"{Name}: подключено к сети");
+            }
+        }
+
+        public virtual void Disconnect()
+        {
+            if (IsConnected)
+            {
+                IsOn = false;
+                IsConnected = false;
+                Console.WriteLine($"{Name}: отключено от сети");
+            }
+        }
+
+        public virtual void TurnOn()
+        {
+            if (IsConnected && !IsOn)
+            {
+                IsOn = true;
+                Console.WriteLine($"{Name}: включено");
+            }
+        }
+
+        public virtual void TurnOff()
+        {
+            if (IsOn)
+            {
+                IsOn = false;
+                Console.WriteLine($"{Name}: выключено");
+            }
+        }
+
+        public abstract void PerformAction();
+    }
+
+    public class Lamp : BaseDevice
+    {
+        private int _brightness;
+        private const int MaxBrightness = 100;
+        private const int MinBrightness = 0;
+
+        public int Brightness
+        {
+            get => _brightness;
+            private set => _brightness = Math.Clamp(value, MinBrightness, MaxBrightness);
+        }
+
+        public Lamp(string name) : base(name)
+        {
+            _brightness = 50;
+        }
+
+        public void SetBrightness(int level)
+        {
+            Brightness = level;
+            Console.WriteLine($"{Name}: яркость установлена на {Brightness}%");
+        }
+
+        public override void PerformAction()
+        {
+            if (IsOn)
+            {
+                Console.WriteLine($"{Name}: излучает свет с яркостью {Brightness}%");
+            }
+        }
+    }
+
+    public class Kettle : BaseDevice
+    {
+        private int _temperature;
+        private const int BoilingTemperature = 100;
+        private const int MaxTemperature = 100;
+
+        public int Temperature
+        {
+            get => _temperature;
+            private set => _temperature = Math.Clamp(value, 0, MaxTemperature);
+        }
+
+        public bool IsBoiling => IsOn && Temperature >= BoilingTemperature;
+
+        public Kettle(string name) : base(name)
+        {
+            _temperature = 20;
+        }
+
+        public override void TurnOn()
+        {
+            base.TurnOn();
+            if (IsOn)
+            {
+                Console.WriteLine($"{Name}: начат нагрев воды");
+            }
+        }
+
+        public override void TurnOff()
+        {
+            base.TurnOff();
+            if (!IsOn)
+            {
+                Console.WriteLine($"{Name}: нагрев остановлен");
+            }
+        }
+
+        public override void PerformAction()
+        {
+            if (IsOn)
+            {
+                if (Temperature < BoilingTemperature)
+                {
+                    Temperature += 20;
+                    Console.WriteLine($"{Name}: температура воды {Temperature}°C");
+                }
+                else
+                {
+                    Console.WriteLine($"{Name}: вода кипит! ({Temperature}°C)");
+                }
+            }
+        }
+    }
+
+    public class Heater : BaseDevice
+    {
+        private int _temperature;
+        private int _targetTemperature;
+        private const int MinTemperature = 15;
+        private const int MaxTemperature = 30;
+
+        public int CurrentTemperature
+        {
+            get => _temperature;
+            private set => _temperature = Math.Clamp(value, MinTemperature, MaxTemperature);
+        }
+
+        public int TargetTemperature
+        {
+            get => _targetTemperature;
+            set => _targetTemperature = Math.Clamp(value, MinTemperature, MaxTemperature);
+        }
+
+        public Heater(string name, int initialTemp = 20) : base(name)
+        {
+            CurrentTemperature = initialTemp;
+            TargetTemperature = 22;
+        }
+
+        public override void PerformAction()
+        {
+            if (IsOn)
+            {
+                if (CurrentTemperature < TargetTemperature)
+                {
+                    CurrentTemperature++;
+                    Console.WriteLine($"{Name}: нагрев до {CurrentTemperature}°C (цель: {TargetTemperature}°C)");
+                }
+                else
+                {
+                    Console.WriteLine($"{Name}: поддерживает температуру {CurrentTemperature}°C");
+                }
+            }
+        }
+    }
+
+    public class SmartSocket
+    {
+        private List<IDevice> _connectedDevices;
+
+        public SmartSocket()
+        {
+            _connectedDevices = new List<IDevice>();
+        }
+
+        public void ConnectDevice(IDevice device)
+        {
+            if (!_connectedDevices.Contains(device))
+            {
+                device.Connect();
+                _connectedDevices.Add(device);
+                Console.WriteLine($"Розетка: устройство '{device.Name}' подключено");
+            }
+        }
+
+        public void DisconnectDevice(IDevice device)
+        {
+            if (_connectedDevices.Contains(device))
+            {
+                device.Disconnect();
+                _connectedDevices.Remove(device);
+                Console.WriteLine($"Розетка: устройство '{device.Name}' отключено");
+            }
+        }
+
+        public void TurnOnDevice(IDevice device)
+        {
+            if (_connectedDevices.Contains(device))
+            {
+                device.TurnOn();
+            }
+            else
+            {
+                Console.WriteLine($"Розетка: устройство '{device.Name}' не подключено");
+            }
+        }
+
+        public void TurnOffDevice(IDevice device)
+        {
+            if (_connectedDevices.Contains(device))
+            {
+                device.TurnOff();
+            }
+        }
+
+        public void TurnOnAll()
+        {
+            Console.WriteLine("Розетка: включаем все устройства...");
+            foreach (var device in _connectedDevices)
+            {
+                device.TurnOn();
+            }
+        }
+
+        public void TurnOffAll()
+        {
+            Console.WriteLine("Розетка: выключаем все устройства...");
+            foreach (var device in _connectedDevices)
+            {
+                device.TurnOff();
+            }
+        }
+
+        public void PerformActions()
+        {
+            Console.WriteLine("Розетка: выполняем действия устройств...");
+            foreach (var device in _connectedDevices)
+            {
+                if (device.IsOn)
+                {
+                    device.PerformAction();
+                }
+            }
+        }
+
+        public void ShowStatus()
+        {
+            Console.WriteLine("\n=== Статус умной розетки ===");
+            Console.WriteLine($"Подключено устройств: {_connectedDevices.Count}");
+            
+            foreach (var device in _connectedDevices)
+            {
+                string status = device.IsOn ? "ВКЛ" : "ВЫКЛ";
+                string connected = device.IsConnected ? "подключено" : "отключено";
+                Console.WriteLine($"- {device.Name}: {status}, {connected}");
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            SmartSocket smartSocket = new SmartSocket();
+
+            Lamp livingRoomLamp = new Lamp("Лампа в гостиной");
+            Kettle kitchenKettle = new Kettle("Чайник на кухне");
+            Heater bedroomHeater = new Heater("Обогреватель в спальне", 18);
+
+            smartSocket.ConnectDevice(livingRoomLamp);
+            smartSocket.ConnectDevice(kitchenKettle);
+            smartSocket.ConnectDevice(bedroomHeater);
+
+            smartSocket.ShowStatus();
+
+            Console.WriteLine("\n--- Включаем устройства ---");
+            smartSocket.TurnOnDevice(livingRoomLamp);
+            (livingRoomLamp as Lamp)?.SetBrightness(75);
+            
+            smartSocket.TurnOnDevice(kitchenKettle);
+            
+            smartSocket.TurnOnDevice(bedroomHeater);
+            (bedroomHeater as Heater).TargetTemperature = 24;
+
+            Console.WriteLine("\n--- Выполняем действия ---");
+            for (int i = 0; i < 3; i++)
+            {
+                smartSocket.PerformActions();
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("\n--- Добавляем новое устройство ---");
+            Lamp bedroomLamp = new Lamp("Ночная лампа");
+            smartSocket.ConnectDevice(bedroomLamp);
+            smartSocket.TurnOnDevice(bedroomLamp);
+            (bedroomLamp as Lamp)?.SetBrightness(30);
+
+            Console.WriteLine("\n--- Выключаем все ---");
+            smartSocket.TurnOffAll();
+
+            smartSocket.ShowStatus();
+        }
+    }
+}
